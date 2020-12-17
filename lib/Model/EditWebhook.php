@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -13,12 +13,12 @@
 /**
  * karix api
  *
- * # Overview  Karix API lets you interact with the Karix platform. It allows you to query your account, set up webhooks, send messages and buy phone numbers.  # API and Clients Versioning  Karix APIs are versioned using the format vX.Y where X is the major version number and Y is minor. All minor version changes are backwards compatible but major releases are not. Please be careful when upgrading.  A new user account is pinned to the latest version at the time of first request. By default every request sent Karix is processed using that version, even if there have been subsequent breaking changes. This is done to prevent existing user applications from breaking. You can change the pinned version for your account using the account dashboard. The default API version can be overridden by specifying the header `api-version`. Note: Specifying this value will not change your pinned version for other calls.  Karix also provides HTTP API clients for all major languages. Release versions of these clients correspond to their API Version supported. Client version vX.Y.Z supports API version vX.Y. HTTP Clients are configured to use `api-version` header for that client version. When using official Karix HTTP Clients only, you dont need to concern yourself with pinned version. To upgrade your API version simply update the client.  # Common Request Structures  All Karix APIs follow a common REST format with the following resources:   - account   - message   - webhook   - number  ## Creating a resource To create a request send a `POST` request with the desired parameters in a JSON object to `/<resource>/` url. A successful response will contain the details of the single resource created with HTTP status code `201 Created`. Note: An exception to this is the `Create Message` API which is a bulk API and returns       a list of message records.  ## Fetching a resource To fetch a resource by its Unique ID send a `GET` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will contain the details of the single resource fetched with HTTP status code `200 OK`  ## Editing a resource To edit certain parameters of a resource send a `PATCH` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource, with a JSON object containing only the parameters which need to be updated. Edit resource APIs generally have no required parameters. A successful response will contain all the details of the single resource after editing.  ## Deleting a resource To delete a resource send a `DELETE` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will return HTTP status code `204 No Content` with no body.  ## Fetching a list of resources To fetch a list of resources send a `GET` request to `/<resource>/` with filters as GET parameters. A successful response will contain a list of filtered paginated objects with HTTP status code `200 OK`.  ### Pagination Pagination for list APIs are controlled using GET parameters:   - `limit`: Number of objects to be returned   - `offset`: Number of objects to skip before collecting the output list.  # Common Response Structures  All Karix APIs follow some common respose structures.  ## Success Responses  ### Single Resource Response  Responses returning a single object will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | data          |               | Details of the object                     |  ### List Resource Response  Responses returning a list of objects will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | |               | previous      | Link to the previous page of the list     | |               | next          | Link to the next page of the list         | |               | count         | Total number of objects over all pages    | |               | limit         | Limit the API was requested with          | |               | offset        | Page Offset the API was requested with    | | objects       |               | List of objects with details              |  ## Error Responses  ### Validation Error Response  Responses for requests which failed due to validation errors will have the follwing keys: | Key           | Child Key     | Description                                | |:------------- |:------------- |:------------------------------------------ | | meta          |               | Meta Details about request and response    | |               | request_uuid  | Unique request identifier                  | | error         |               | Details for the error                      | |               | message       | Error message                              | |               | param         | (Optional) parameter this error relates to |  Validation error responses will return HTTP Status Code `400 Bad Request`  ### Insufficient Balance Response  Some requests will require to consume account credits. In case of insufficient balance the following keys will be returned: | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | error         |               | Details for the error                     | |               | message       | `Insufficient Balance`                    |  Insufficient balance response will return HTTP Status Code `402 Payment Required`
+ * Karix API lets you interact with the Karix platform using an omnichannel messaging API. It also allows you to query your account, set up webhooks and buy phone numbers.
  *
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 2.0
  * Contact: support@karix.io
  * Generated by: https://github.com/swagger-api/swagger-codegen.git
- * Swagger Codegen version: 2.3.1
+ * Swagger Codegen version: unset
  */
 
 /**
@@ -27,16 +27,16 @@
  * Do not edit the class manually.
  */
 
-namespace Swagger\Client\Model;
+namespace Karix\Model;
 
 use \ArrayAccess;
-use \Swagger\Client\ObjectSerializer;
+use \Karix\ObjectSerializer;
 
 /**
  * EditWebhook Class Doc Comment
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -57,10 +57,7 @@ class EditWebhook implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $swaggerTypes = [
-        'sms_notification_url' => 'string',
-        'sms_notification_method' => 'string',
-        'sms_notification_fallback_url' => 'string',
-        'sms_notification_fallback_method' => 'string',
+        'events_url' => 'string',
         'name' => 'string'
     ];
 
@@ -70,10 +67,7 @@ class EditWebhook implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $swaggerFormats = [
-        'sms_notification_url' => null,
-        'sms_notification_method' => null,
-        'sms_notification_fallback_url' => null,
-        'sms_notification_fallback_method' => null,
+        'events_url' => null,
         'name' => null
     ];
 
@@ -81,6 +75,8 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * Array of property to type mappings. Used for (de)serialization
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function swaggerTypes()
     {
@@ -91,6 +87,8 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * Array of property to format mappings. Used for (de)serialization
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function swaggerFormats()
     {
@@ -102,12 +100,11 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * and the value is the original name
      *
      * @var string[]
+     *
+     * @codeCoverageIgnore
      */
     protected static $attributeMap = [
-        'sms_notification_url' => 'sms_notification_url',
-        'sms_notification_method' => 'sms_notification_method',
-        'sms_notification_fallback_url' => 'sms_notification_fallback_url',
-        'sms_notification_fallback_method' => 'sms_notification_fallback_method',
+        'events_url' => 'events_url',
         'name' => 'name'
     ];
 
@@ -117,10 +114,7 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'sms_notification_url' => 'setSmsNotificationUrl',
-        'sms_notification_method' => 'setSmsNotificationMethod',
-        'sms_notification_fallback_url' => 'setSmsNotificationFallbackUrl',
-        'sms_notification_fallback_method' => 'setSmsNotificationFallbackMethod',
+        'events_url' => 'setEventsUrl',
         'name' => 'setName'
     ];
 
@@ -130,10 +124,7 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'sms_notification_url' => 'getSmsNotificationUrl',
-        'sms_notification_method' => 'getSmsNotificationMethod',
-        'sms_notification_fallback_url' => 'getSmsNotificationFallbackUrl',
-        'sms_notification_fallback_method' => 'getSmsNotificationFallbackMethod',
+        'events_url' => 'getEventsUrl',
         'name' => 'getName'
     ];
 
@@ -142,6 +133,8 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * and the value is the original name
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function attributeMap()
     {
@@ -152,6 +145,8 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * Array of attributes to setter functions (for deserialization of responses)
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function setters()
     {
@@ -162,6 +157,8 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * Array of attributes to getter functions (for serialization of requests)
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function getters()
     {
@@ -172,6 +169,8 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * The original name of the model.
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function getModelName()
     {
@@ -197,10 +196,7 @@ class EditWebhook implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['sms_notification_url'] = isset($data['sms_notification_url']) ? $data['sms_notification_url'] : null;
-        $this->container['sms_notification_method'] = isset($data['sms_notification_method']) ? $data['sms_notification_method'] : null;
-        $this->container['sms_notification_fallback_url'] = isset($data['sms_notification_fallback_url']) ? $data['sms_notification_fallback_url'] : null;
-        $this->container['sms_notification_fallback_method'] = isset($data['sms_notification_fallback_method']) ? $data['sms_notification_fallback_method'] : null;
+        $this->container['events_url'] = isset($data['events_url']) ? $data['events_url'] : null;
         $this->container['name'] = isset($data['name']) ? $data['name'] : null;
     }
 
@@ -224,103 +220,30 @@ class EditWebhook implements ModelInterface, ArrayAccess
      */
     public function valid()
     {
-
-        return true;
+        return count($this->listInvalidProperties()) === 0;
     }
 
 
     /**
-     * Gets sms_notification_url
+     * Gets events_url
      *
      * @return string
      */
-    public function getSmsNotificationUrl()
+    public function getEventsUrl()
     {
-        return $this->container['sms_notification_url'];
+        return $this->container['events_url'];
     }
 
     /**
-     * Sets sms_notification_url
+     * Sets events_url
      *
-     * @param string $sms_notification_url API url to notify in case of inbound message
+     * @param string $events_url URL to notify of an inbound message event. - Please read more about [Karix Events](#section/Events-and-Webhooks) structure.
      *
      * @return $this
      */
-    public function setSmsNotificationUrl($sms_notification_url)
+    public function setEventsUrl($events_url)
     {
-        $this->container['sms_notification_url'] = $sms_notification_url;
-
-        return $this;
-    }
-
-    /**
-     * Gets sms_notification_method
-     *
-     * @return string
-     */
-    public function getSmsNotificationMethod()
-    {
-        return $this->container['sms_notification_method'];
-    }
-
-    /**
-     * Sets sms_notification_method
-     *
-     * @param string $sms_notification_method HTTP method to use for notifying API url in case of inbound message
-     *
-     * @return $this
-     */
-    public function setSmsNotificationMethod($sms_notification_method)
-    {
-        $this->container['sms_notification_method'] = $sms_notification_method;
-
-        return $this;
-    }
-
-    /**
-     * Gets sms_notification_fallback_url
-     *
-     * @return string
-     */
-    public function getSmsNotificationFallbackUrl()
-    {
-        return $this->container['sms_notification_fallback_url'];
-    }
-
-    /**
-     * Sets sms_notification_fallback_url
-     *
-     * @param string $sms_notification_fallback_url In case the service for `sms_notification_url` is down Karix will hit the fallback url with the incoming message details
-     *
-     * @return $this
-     */
-    public function setSmsNotificationFallbackUrl($sms_notification_fallback_url)
-    {
-        $this->container['sms_notification_fallback_url'] = $sms_notification_fallback_url;
-
-        return $this;
-    }
-
-    /**
-     * Gets sms_notification_fallback_method
-     *
-     * @return string
-     */
-    public function getSmsNotificationFallbackMethod()
-    {
-        return $this->container['sms_notification_fallback_method'];
-    }
-
-    /**
-     * Sets sms_notification_fallback_method
-     *
-     * @param string $sms_notification_fallback_method HTTP method to use for fallback notification url
-     *
-     * @return $this
-     */
-    public function setSmsNotificationFallbackMethod($sms_notification_fallback_method)
-    {
-        $this->container['sms_notification_fallback_method'] = $sms_notification_fallback_method;
+        $this->container['events_url'] = $events_url;
 
         return $this;
     }
@@ -354,6 +277,8 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * @param integer $offset Offset
      *
      * @return boolean
+     *
+     * @codeCoverageIgnore
      */
     public function offsetExists($offset)
     {
@@ -366,6 +291,8 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * @param integer $offset Offset
      *
      * @return mixed
+     *
+     * @codeCoverageIgnore
      */
     public function offsetGet($offset)
     {
@@ -379,6 +306,8 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * @param mixed   $value  Value to be set
      *
      * @return void
+     *
+     * @codeCoverageIgnore
      */
     public function offsetSet($offset, $value)
     {
@@ -395,6 +324,8 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * @param integer $offset Offset
      *
      * @return void
+     *
+     * @codeCoverageIgnore
      */
     public function offsetUnset($offset)
     {
@@ -405,6 +336,8 @@ class EditWebhook implements ModelInterface, ArrayAccess
      * Gets the string presentation of the object
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function __toString()
     {

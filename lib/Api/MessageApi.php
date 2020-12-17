@@ -4,7 +4,7 @@
  * PHP version 5
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -12,12 +12,12 @@
 /**
  * karix api
  *
- * # Overview  Karix API lets you interact with the Karix platform. It allows you to query your account, set up webhooks, send messages and buy phone numbers.  # API and Clients Versioning  Karix APIs are versioned using the format vX.Y where X is the major version number and Y is minor. All minor version changes are backwards compatible but major releases are not. Please be careful when upgrading.  A new user account is pinned to the latest version at the time of first request. By default every request sent Karix is processed using that version, even if there have been subsequent breaking changes. This is done to prevent existing user applications from breaking. You can change the pinned version for your account using the account dashboard. The default API version can be overridden by specifying the header `api-version`. Note: Specifying this value will not change your pinned version for other calls.  Karix also provides HTTP API clients for all major languages. Release versions of these clients correspond to their API Version supported. Client version vX.Y.Z supports API version vX.Y. HTTP Clients are configured to use `api-version` header for that client version. When using official Karix HTTP Clients only, you dont need to concern yourself with pinned version. To upgrade your API version simply update the client.  # Common Request Structures  All Karix APIs follow a common REST format with the following resources:   - account   - message   - webhook   - number  ## Creating a resource To create a request send a `POST` request with the desired parameters in a JSON object to `/<resource>/` url. A successful response will contain the details of the single resource created with HTTP status code `201 Created`. Note: An exception to this is the `Create Message` API which is a bulk API and returns       a list of message records.  ## Fetching a resource To fetch a resource by its Unique ID send a `GET` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will contain the details of the single resource fetched with HTTP status code `200 OK`  ## Editing a resource To edit certain parameters of a resource send a `PATCH` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource, with a JSON object containing only the parameters which need to be updated. Edit resource APIs generally have no required parameters. A successful response will contain all the details of the single resource after editing.  ## Deleting a resource To delete a resource send a `DELETE` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will return HTTP status code `204 No Content` with no body.  ## Fetching a list of resources To fetch a list of resources send a `GET` request to `/<resource>/` with filters as GET parameters. A successful response will contain a list of filtered paginated objects with HTTP status code `200 OK`.  ### Pagination Pagination for list APIs are controlled using GET parameters:   - `limit`: Number of objects to be returned   - `offset`: Number of objects to skip before collecting the output list.  # Common Response Structures  All Karix APIs follow some common respose structures.  ## Success Responses  ### Single Resource Response  Responses returning a single object will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | data          |               | Details of the object                     |  ### List Resource Response  Responses returning a list of objects will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | |               | previous      | Link to the previous page of the list     | |               | next          | Link to the next page of the list         | |               | count         | Total number of objects over all pages    | |               | limit         | Limit the API was requested with          | |               | offset        | Page Offset the API was requested with    | | objects       |               | List of objects with details              |  ## Error Responses  ### Validation Error Response  Responses for requests which failed due to validation errors will have the follwing keys: | Key           | Child Key     | Description                                | |:------------- |:------------- |:------------------------------------------ | | meta          |               | Meta Details about request and response    | |               | request_uuid  | Unique request identifier                  | | error         |               | Details for the error                      | |               | message       | Error message                              | |               | param         | (Optional) parameter this error relates to |  Validation error responses will return HTTP Status Code `400 Bad Request`  ### Insufficient Balance Response  Some requests will require to consume account credits. In case of insufficient balance the following keys will be returned: | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | error         |               | Details for the error                     | |               | message       | `Insufficient Balance`                    |  Insufficient balance response will return HTTP Status Code `402 Payment Required`
+ * Karix API lets you interact with the Karix platform using an omnichannel messaging API. It also allows you to query your account, set up webhooks and buy phone numbers.
  *
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 2.0
  * Contact: support@karix.io
  * Generated by: https://github.com/swagger-api/swagger-codegen.git
- * Swagger Codegen version: 2.3.1
+ * Swagger Codegen version: unset
  */
 
 /**
@@ -26,7 +26,7 @@
  * Do not edit the class manually.
  */
 
-namespace Swagger\Client\Api;
+namespace Karix\Api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
@@ -34,16 +34,16 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
-use Swagger\Client\ApiException;
-use Swagger\Client\Configuration;
-use Swagger\Client\HeaderSelector;
-use Swagger\Client\ObjectSerializer;
+use Karix\ApiException;
+use Karix\Configuration;
+use Karix\HeaderSelector;
+use Karix\ObjectSerializer;
 
 /**
  * MessageApi Class Doc Comment
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -58,6 +58,11 @@ class MessageApi
      * @var Configuration
      */
     protected $config;
+
+    /**
+     * @var HeaderSelector
+     */
+    protected $headerSelector;
 
     /**
      * @param ClientInterface $client
@@ -76,6 +81,8 @@ class MessageApi
 
     /**
      * @return Configuration
+     *
+     * @codeCoverageIgnore
      */
     public function getConfig()
     {
@@ -87,20 +94,19 @@ class MessageApi
      *
      * Get list of messages sent or received
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      * @param  string $direction Message direction, inbound or outbound to filter on. If not provided, the filter is not applied. (optional)
      * @param  string $account_uid Filter the result list by the account which sent the message - If not provided or &#x60;null&#x60; or empty string, no filter will be placed   and all the messages by the main account and its subaccounts are returned - To get the list of messages sent by main account only, set &#x60;account_uid&#x60;   to main account&#39;s uid. (optional)
      * @param  string $state Filter the result on the basis of message state. (optional)
      * @param  int $offset The number of items to skip before starting to collect the result set. (optional, default to 0)
      * @param  int $limit The numbers of items to return. (optional, default to 10)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Swagger\Client\Model\InlineResponse2001
+     * @return \Karix\Model\MessageListResponse
      */
-    public function getMessage($api_version = '1.0', $direction = null, $account_uid = null, $state = null, $offset = '0', $limit = '10')
+    public function getMessage($direction = null, $account_uid = null, $state = null, $offset = '0', $limit = '10')
     {
-        list($response) = $this->getMessageWithHttpInfo($api_version, $direction, $account_uid, $state, $offset, $limit);
+        list($response) = $this->getMessageWithHttpInfo($direction, $account_uid, $state, $offset, $limit);
         return $response;
     }
 
@@ -109,21 +115,20 @@ class MessageApi
      *
      * Get list of messages sent or received
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      * @param  string $direction Message direction, inbound or outbound to filter on. If not provided, the filter is not applied. (optional)
      * @param  string $account_uid Filter the result list by the account which sent the message - If not provided or &#x60;null&#x60; or empty string, no filter will be placed   and all the messages by the main account and its subaccounts are returned - To get the list of messages sent by main account only, set &#x60;account_uid&#x60;   to main account&#39;s uid. (optional)
      * @param  string $state Filter the result on the basis of message state. (optional)
      * @param  int $offset The number of items to skip before starting to collect the result set. (optional, default to 0)
      * @param  int $limit The numbers of items to return. (optional, default to 10)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Swagger\Client\Model\InlineResponse2001, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Karix\Model\MessageListResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getMessageWithHttpInfo($api_version = '1.0', $direction = null, $account_uid = null, $state = null, $offset = '0', $limit = '10')
+    public function getMessageWithHttpInfo($direction = null, $account_uid = null, $state = null, $offset = '0', $limit = '10')
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse2001';
-        $request = $this->getMessageRequest($api_version, $direction, $account_uid, $state, $offset, $limit);
+        $returnType = '\Karix\Model\MessageListResponse';
+        $request = $this->getMessageRequest($direction, $account_uid, $state, $offset, $limit);
 
         try {
             $options = $this->createHttpClientOption();
@@ -170,32 +175,7 @@ class MessageApi
             ];
 
         } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse2001',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 403:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse403',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse500',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
+            $this->getMessageSetResponseObject($e);
             throw $e;
         }
     }
@@ -205,7 +185,6 @@ class MessageApi
      *
      * Get list of messages sent or received
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      * @param  string $direction Message direction, inbound or outbound to filter on. If not provided, the filter is not applied. (optional)
      * @param  string $account_uid Filter the result list by the account which sent the message - If not provided or &#x60;null&#x60; or empty string, no filter will be placed   and all the messages by the main account and its subaccounts are returned - To get the list of messages sent by main account only, set &#x60;account_uid&#x60;   to main account&#39;s uid. (optional)
      * @param  string $state Filter the result on the basis of message state. (optional)
@@ -215,9 +194,9 @@ class MessageApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getMessageAsync($api_version = '1.0', $direction = null, $account_uid = null, $state = null, $offset = '0', $limit = '10')
+    public function getMessageAsync($direction = null, $account_uid = null, $state = null, $offset = '0', $limit = '10')
     {
-        return $this->getMessageAsyncWithHttpInfo($api_version, $direction, $account_uid, $state, $offset, $limit)
+        return $this->getMessageAsyncWithHttpInfo($direction, $account_uid, $state, $offset, $limit)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -230,7 +209,6 @@ class MessageApi
      *
      * Get list of messages sent or received
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      * @param  string $direction Message direction, inbound or outbound to filter on. If not provided, the filter is not applied. (optional)
      * @param  string $account_uid Filter the result list by the account which sent the message - If not provided or &#x60;null&#x60; or empty string, no filter will be placed   and all the messages by the main account and its subaccounts are returned - To get the list of messages sent by main account only, set &#x60;account_uid&#x60;   to main account&#39;s uid. (optional)
      * @param  string $state Filter the result on the basis of message state. (optional)
@@ -240,15 +218,30 @@ class MessageApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getMessageAsyncWithHttpInfo($api_version = '1.0', $direction = null, $account_uid = null, $state = null, $offset = '0', $limit = '10')
+    public function getMessageAsyncWithHttpInfo($direction = null, $account_uid = null, $state = null, $offset = '0', $limit = '10')
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse2001';
-        $request = $this->getMessageRequest($api_version, $direction, $account_uid, $state, $offset, $limit);
+        $returnType = '\Karix\Model\MessageListResponse';
+        $request = $this->getMessageRequest($direction, $account_uid, $state, $offset, $limit);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
-                function ($response) use ($returnType) {
+                function ($response) use ($request, $returnType) {
+                    $statusCode = $response->getStatusCode();
+                    if ($statusCode < 200 || $statusCode > 299) {
+                        $exception = new ApiException(
+                            sprintf(
+                                '[%d] Error connecting to the API (%s)',
+                                $statusCode,
+                                $request->getUri()
+                            ),
+                            $statusCode,
+                            $response->getHeaders(),
+                            $response->getBody()
+                        );
+                        $this->getMessageSetResponseObject($exception);
+                        throw $exception;
+                    }
                     $responseBody = $response->getBody();
                     if ($returnType === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
@@ -266,18 +259,31 @@ class MessageApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        $response = $exception->getResponse();
+                        if ($response) {
+                            $statusCode = $response->getStatusCode();
+                            $e = new ApiException(
+                                sprintf(
+                                    '[%d] Error connecting to the API (%s)',
+                                    $statusCode,
+                                    $exception->getRequest()->getUri()
+                                ),
+                                $statusCode,
+                                $response->getHeaders(),
+                                $response->getBody()
+                            );
+                            $this->getMessageSetResponseObject($e);
+                            throw $e;
+                        }
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? $exception->getResponse()->getBody()->getContents() : null
+                        );
+                    }
+                    throw $exception;
                 }
             );
     }
@@ -285,7 +291,6 @@ class MessageApi
     /**
      * Create request for operation 'getMessage'
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      * @param  string $direction Message direction, inbound or outbound to filter on. If not provided, the filter is not applied. (optional)
      * @param  string $account_uid Filter the result list by the account which sent the message - If not provided or &#x60;null&#x60; or empty string, no filter will be placed   and all the messages by the main account and its subaccounts are returned - To get the list of messages sent by main account only, set &#x60;account_uid&#x60;   to main account&#39;s uid. (optional)
      * @param  string $state Filter the result on the basis of message state. (optional)
@@ -295,8 +300,16 @@ class MessageApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function getMessageRequest($api_version = '1.0', $direction = null, $account_uid = null, $state = null, $offset = '0', $limit = '10')
+    protected function getMessageRequest($direction = null, $account_uid = null, $state = null, $offset = '0', $limit = '10')
     {
+        // set constants with only one allowable value
+        $api_version = '2.0';
+        // verify the required parameter 'api_version' is set
+        if ($api_version === null || (is_array($api_version) && count($api_version) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $api_version when calling getMessage'
+            );
+        }
 
         $resourcePath = '/message/';
         $formParams = [];
@@ -400,20 +413,52 @@ class MessageApi
     }
 
     /**
+    * Sets the response object for an ApiException based on status code
+    */
+    protected function getMessageSetResponseObject($api_exception)
+    {
+        switch ($api_exception->getCode()) {
+            case 200:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\MessageListResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 403:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\UnauthorizedResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 500:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\ErrorResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+        }
+    }
+
+    /**
      * Operation getMessageById
      *
      * Get message details by id.
      *
      * @param  string $uid Alphanumeric ID of the message to get. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Swagger\Client\Model\InlineResponse2002
+     * @return \Karix\Model\MessageResponse
      */
-    public function getMessageById($uid, $api_version = '1.0')
+    public function getMessageById($uid)
     {
-        list($response) = $this->getMessageByIdWithHttpInfo($uid, $api_version);
+        list($response) = $this->getMessageByIdWithHttpInfo($uid);
         return $response;
     }
 
@@ -423,16 +468,15 @@ class MessageApi
      * Get message details by id.
      *
      * @param  string $uid Alphanumeric ID of the message to get. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Swagger\Client\Model\InlineResponse2002, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Karix\Model\MessageResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getMessageByIdWithHttpInfo($uid, $api_version = '1.0')
+    public function getMessageByIdWithHttpInfo($uid)
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse2002';
-        $request = $this->getMessageByIdRequest($uid, $api_version);
+        $returnType = '\Karix\Model\MessageResponse';
+        $request = $this->getMessageByIdRequest($uid);
 
         try {
             $options = $this->createHttpClientOption();
@@ -479,40 +523,7 @@ class MessageApi
             ];
 
         } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse2002',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 403:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse403',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 404:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse404',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse500',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
+            $this->getMessageByIdSetResponseObject($e);
             throw $e;
         }
     }
@@ -523,14 +534,13 @@ class MessageApi
      * Get message details by id.
      *
      * @param  string $uid Alphanumeric ID of the message to get. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getMessageByIdAsync($uid, $api_version = '1.0')
+    public function getMessageByIdAsync($uid)
     {
-        return $this->getMessageByIdAsyncWithHttpInfo($uid, $api_version)
+        return $this->getMessageByIdAsyncWithHttpInfo($uid)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -544,20 +554,34 @@ class MessageApi
      * Get message details by id.
      *
      * @param  string $uid Alphanumeric ID of the message to get. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getMessageByIdAsyncWithHttpInfo($uid, $api_version = '1.0')
+    public function getMessageByIdAsyncWithHttpInfo($uid)
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse2002';
-        $request = $this->getMessageByIdRequest($uid, $api_version);
+        $returnType = '\Karix\Model\MessageResponse';
+        $request = $this->getMessageByIdRequest($uid);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
-                function ($response) use ($returnType) {
+                function ($response) use ($request, $returnType) {
+                    $statusCode = $response->getStatusCode();
+                    if ($statusCode < 200 || $statusCode > 299) {
+                        $exception = new ApiException(
+                            sprintf(
+                                '[%d] Error connecting to the API (%s)',
+                                $statusCode,
+                                $request->getUri()
+                            ),
+                            $statusCode,
+                            $response->getHeaders(),
+                            $response->getBody()
+                        );
+                        $this->getMessageByIdSetResponseObject($exception);
+                        throw $exception;
+                    }
                     $responseBody = $response->getBody();
                     if ($returnType === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
@@ -575,18 +599,31 @@ class MessageApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        $response = $exception->getResponse();
+                        if ($response) {
+                            $statusCode = $response->getStatusCode();
+                            $e = new ApiException(
+                                sprintf(
+                                    '[%d] Error connecting to the API (%s)',
+                                    $statusCode,
+                                    $exception->getRequest()->getUri()
+                                ),
+                                $statusCode,
+                                $response->getHeaders(),
+                                $response->getBody()
+                            );
+                            $this->getMessageByIdSetResponseObject($e);
+                            throw $e;
+                        }
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? $exception->getResponse()->getBody()->getContents() : null
+                        );
+                    }
+                    throw $exception;
                 }
             );
     }
@@ -595,15 +632,22 @@ class MessageApi
      * Create request for operation 'getMessageById'
      *
      * @param  string $uid Alphanumeric ID of the message to get. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function getMessageByIdRequest($uid, $api_version = '1.0')
+    protected function getMessageByIdRequest($uid)
     {
+        // set constants with only one allowable value
+        $api_version = '2.0';
+        // verify the required parameter 'api_version' is set
+        if ($api_version === null || (is_array($api_version) && count($api_version) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $api_version when calling getMessageById'
+            );
+        }
         // verify the required parameter 'uid' is set
-        if ($uid === null) {
+        if ($uid === null || (is_array($uid) && count($uid) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $uid when calling getMessageById'
             );
@@ -699,39 +743,78 @@ class MessageApi
     }
 
     /**
+    * Sets the response object for an ApiException based on status code
+    */
+    protected function getMessageByIdSetResponseObject($api_exception)
+    {
+        switch ($api_exception->getCode()) {
+            case 200:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\MessageResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 403:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\UnauthorizedResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 404:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\NotFoundResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 500:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\ErrorResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+        }
+    }
+
+    /**
      * Operation sendMessage
      *
-     * Send a message to a list of phone numbers
+     * Send a message to a list of destinations
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\CreateMessage $message Create Message object (optional)
+     * @param  \Karix\Model\CreateMessage $message Create Message object (required)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Swagger\Client\Model\InlineResponse202
+     * @return \Karix\Model\MessageCreatedResponse
      */
-    public function sendMessage($api_version = '1.0', $message = null)
+    public function sendMessage($message)
     {
-        list($response) = $this->sendMessageWithHttpInfo($api_version, $message);
+        list($response) = $this->sendMessageWithHttpInfo($message);
         return $response;
     }
 
     /**
      * Operation sendMessageWithHttpInfo
      *
-     * Send a message to a list of phone numbers
+     * Send a message to a list of destinations
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\CreateMessage $message Create Message object (optional)
+     * @param  \Karix\Model\CreateMessage $message Create Message object (required)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Swagger\Client\Model\InlineResponse202, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Karix\Model\MessageCreatedResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function sendMessageWithHttpInfo($api_version = '1.0', $message = null)
+    public function sendMessageWithHttpInfo($message)
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse202';
-        $request = $this->sendMessageRequest($api_version, $message);
+        $returnType = '\Karix\Model\MessageCreatedResponse';
+        $request = $this->sendMessageRequest($message);
 
         try {
             $options = $this->createHttpClientOption();
@@ -778,48 +861,7 @@ class MessageApi
             ];
 
         } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 202:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse202',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 400:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse500',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 402:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse402',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 403:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse403',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse500',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
+            $this->sendMessageSetResponseObject($e);
             throw $e;
         }
     }
@@ -827,17 +869,16 @@ class MessageApi
     /**
      * Operation sendMessageAsync
      *
-     * Send a message to a list of phone numbers
+     * Send a message to a list of destinations
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\CreateMessage $message Create Message object (optional)
+     * @param  \Karix\Model\CreateMessage $message Create Message object (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function sendMessageAsync($api_version = '1.0', $message = null)
+    public function sendMessageAsync($message)
     {
-        return $this->sendMessageAsyncWithHttpInfo($api_version, $message)
+        return $this->sendMessageAsyncWithHttpInfo($message)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -848,23 +889,37 @@ class MessageApi
     /**
      * Operation sendMessageAsyncWithHttpInfo
      *
-     * Send a message to a list of phone numbers
+     * Send a message to a list of destinations
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\CreateMessage $message Create Message object (optional)
+     * @param  \Karix\Model\CreateMessage $message Create Message object (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function sendMessageAsyncWithHttpInfo($api_version = '1.0', $message = null)
+    public function sendMessageAsyncWithHttpInfo($message)
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse202';
-        $request = $this->sendMessageRequest($api_version, $message);
+        $returnType = '\Karix\Model\MessageCreatedResponse';
+        $request = $this->sendMessageRequest($message);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
-                function ($response) use ($returnType) {
+                function ($response) use ($request, $returnType) {
+                    $statusCode = $response->getStatusCode();
+                    if ($statusCode < 200 || $statusCode > 299) {
+                        $exception = new ApiException(
+                            sprintf(
+                                '[%d] Error connecting to the API (%s)',
+                                $statusCode,
+                                $request->getUri()
+                            ),
+                            $statusCode,
+                            $response->getHeaders(),
+                            $response->getBody()
+                        );
+                        $this->sendMessageSetResponseObject($exception);
+                        throw $exception;
+                    }
                     $responseBody = $response->getBody();
                     if ($returnType === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
@@ -882,18 +937,31 @@ class MessageApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        $response = $exception->getResponse();
+                        if ($response) {
+                            $statusCode = $response->getStatusCode();
+                            $e = new ApiException(
+                                sprintf(
+                                    '[%d] Error connecting to the API (%s)',
+                                    $statusCode,
+                                    $exception->getRequest()->getUri()
+                                ),
+                                $statusCode,
+                                $response->getHeaders(),
+                                $response->getBody()
+                            );
+                            $this->sendMessageSetResponseObject($e);
+                            throw $e;
+                        }
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? $exception->getResponse()->getBody()->getContents() : null
+                        );
+                    }
+                    throw $exception;
                 }
             );
     }
@@ -901,14 +969,27 @@ class MessageApi
     /**
      * Create request for operation 'sendMessage'
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\CreateMessage $message Create Message object (optional)
+     * @param  \Karix\Model\CreateMessage $message Create Message object (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function sendMessageRequest($api_version = '1.0', $message = null)
+    protected function sendMessageRequest($message)
     {
+        // set constants with only one allowable value
+        $api_version = '2.0';
+        // verify the required parameter 'api_version' is set
+        if ($api_version === null || (is_array($api_version) && count($api_version) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $api_version when calling sendMessage'
+            );
+        }
+        // verify the required parameter 'message' is set
+        if ($message === null || (is_array($message) && count($message) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $message when calling sendMessage'
+            );
+        }
 
         $resourcePath = '/message/';
         $formParams = [];
@@ -992,6 +1073,55 @@ class MessageApi
             $headers,
             $httpBody
         );
+    }
+
+    /**
+    * Sets the response object for an ApiException based on status code
+    */
+    protected function sendMessageSetResponseObject($api_exception)
+    {
+        switch ($api_exception->getCode()) {
+            case 202:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\MessageCreatedResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 400:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\ErrorResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 402:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\InsufficientBalanceResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 403:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\UnauthorizedResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 500:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\ErrorResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+        }
     }
 
     /**

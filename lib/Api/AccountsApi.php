@@ -4,7 +4,7 @@
  * PHP version 5
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -12,12 +12,12 @@
 /**
  * karix api
  *
- * # Overview  Karix API lets you interact with the Karix platform. It allows you to query your account, set up webhooks, send messages and buy phone numbers.  # API and Clients Versioning  Karix APIs are versioned using the format vX.Y where X is the major version number and Y is minor. All minor version changes are backwards compatible but major releases are not. Please be careful when upgrading.  A new user account is pinned to the latest version at the time of first request. By default every request sent Karix is processed using that version, even if there have been subsequent breaking changes. This is done to prevent existing user applications from breaking. You can change the pinned version for your account using the account dashboard. The default API version can be overridden by specifying the header `api-version`. Note: Specifying this value will not change your pinned version for other calls.  Karix also provides HTTP API clients for all major languages. Release versions of these clients correspond to their API Version supported. Client version vX.Y.Z supports API version vX.Y. HTTP Clients are configured to use `api-version` header for that client version. When using official Karix HTTP Clients only, you dont need to concern yourself with pinned version. To upgrade your API version simply update the client.  # Common Request Structures  All Karix APIs follow a common REST format with the following resources:   - account   - message   - webhook   - number  ## Creating a resource To create a request send a `POST` request with the desired parameters in a JSON object to `/<resource>/` url. A successful response will contain the details of the single resource created with HTTP status code `201 Created`. Note: An exception to this is the `Create Message` API which is a bulk API and returns       a list of message records.  ## Fetching a resource To fetch a resource by its Unique ID send a `GET` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will contain the details of the single resource fetched with HTTP status code `200 OK`  ## Editing a resource To edit certain parameters of a resource send a `PATCH` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource, with a JSON object containing only the parameters which need to be updated. Edit resource APIs generally have no required parameters. A successful response will contain all the details of the single resource after editing.  ## Deleting a resource To delete a resource send a `DELETE` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will return HTTP status code `204 No Content` with no body.  ## Fetching a list of resources To fetch a list of resources send a `GET` request to `/<resource>/` with filters as GET parameters. A successful response will contain a list of filtered paginated objects with HTTP status code `200 OK`.  ### Pagination Pagination for list APIs are controlled using GET parameters:   - `limit`: Number of objects to be returned   - `offset`: Number of objects to skip before collecting the output list.  # Common Response Structures  All Karix APIs follow some common respose structures.  ## Success Responses  ### Single Resource Response  Responses returning a single object will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | data          |               | Details of the object                     |  ### List Resource Response  Responses returning a list of objects will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | |               | previous      | Link to the previous page of the list     | |               | next          | Link to the next page of the list         | |               | count         | Total number of objects over all pages    | |               | limit         | Limit the API was requested with          | |               | offset        | Page Offset the API was requested with    | | objects       |               | List of objects with details              |  ## Error Responses  ### Validation Error Response  Responses for requests which failed due to validation errors will have the follwing keys: | Key           | Child Key     | Description                                | |:------------- |:------------- |:------------------------------------------ | | meta          |               | Meta Details about request and response    | |               | request_uuid  | Unique request identifier                  | | error         |               | Details for the error                      | |               | message       | Error message                              | |               | param         | (Optional) parameter this error relates to |  Validation error responses will return HTTP Status Code `400 Bad Request`  ### Insufficient Balance Response  Some requests will require to consume account credits. In case of insufficient balance the following keys will be returned: | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | error         |               | Details for the error                     | |               | message       | `Insufficient Balance`                    |  Insufficient balance response will return HTTP Status Code `402 Payment Required`
+ * Karix API lets you interact with the Karix platform using an omnichannel messaging API. It also allows you to query your account, set up webhooks and buy phone numbers.
  *
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 2.0
  * Contact: support@karix.io
  * Generated by: https://github.com/swagger-api/swagger-codegen.git
- * Swagger Codegen version: 2.3.1
+ * Swagger Codegen version: unset
  */
 
 /**
@@ -26,7 +26,7 @@
  * Do not edit the class manually.
  */
 
-namespace Swagger\Client\Api;
+namespace Karix\Api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
@@ -34,16 +34,16 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
-use Swagger\Client\ApiException;
-use Swagger\Client\Configuration;
-use Swagger\Client\HeaderSelector;
-use Swagger\Client\ObjectSerializer;
+use Karix\ApiException;
+use Karix\Configuration;
+use Karix\HeaderSelector;
+use Karix\ObjectSerializer;
 
 /**
  * AccountsApi Class Doc Comment
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -58,6 +58,11 @@ class AccountsApi
      * @var Configuration
      */
     protected $config;
+
+    /**
+     * @var HeaderSelector
+     */
+    protected $headerSelector;
 
     /**
      * @param ClientInterface $client
@@ -76,6 +81,8 @@ class AccountsApi
 
     /**
      * @return Configuration
+     *
+     * @codeCoverageIgnore
      */
     public function getConfig()
     {
@@ -87,16 +94,15 @@ class AccountsApi
      *
      * Create a new subaccount
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\CreateAccount $subaccount Subaccount object (optional)
+     * @param  \Karix\Model\CreateAccount $subaccount Subaccount object (required)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Swagger\Client\Model\InlineResponse201
+     * @return \Karix\Model\AccountResponse
      */
-    public function createSubaccount($api_version = '1.0', $subaccount = null)
+    public function createSubaccount($subaccount)
     {
-        list($response) = $this->createSubaccountWithHttpInfo($api_version, $subaccount);
+        list($response) = $this->createSubaccountWithHttpInfo($subaccount);
         return $response;
     }
 
@@ -105,17 +111,16 @@ class AccountsApi
      *
      * Create a new subaccount
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\CreateAccount $subaccount Subaccount object (optional)
+     * @param  \Karix\Model\CreateAccount $subaccount Subaccount object (required)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Swagger\Client\Model\InlineResponse201, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Karix\Model\AccountResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function createSubaccountWithHttpInfo($api_version = '1.0', $subaccount = null)
+    public function createSubaccountWithHttpInfo($subaccount)
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse201';
-        $request = $this->createSubaccountRequest($api_version, $subaccount);
+        $returnType = '\Karix\Model\AccountResponse';
+        $request = $this->createSubaccountRequest($subaccount);
 
         try {
             $options = $this->createHttpClientOption();
@@ -162,40 +167,7 @@ class AccountsApi
             ];
 
         } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 201:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse201',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 400:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse500',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 403:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse403',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse500',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
+            $this->createSubaccountSetResponseObject($e);
             throw $e;
         }
     }
@@ -205,15 +177,14 @@ class AccountsApi
      *
      * Create a new subaccount
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\CreateAccount $subaccount Subaccount object (optional)
+     * @param  \Karix\Model\CreateAccount $subaccount Subaccount object (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function createSubaccountAsync($api_version = '1.0', $subaccount = null)
+    public function createSubaccountAsync($subaccount)
     {
-        return $this->createSubaccountAsyncWithHttpInfo($api_version, $subaccount)
+        return $this->createSubaccountAsyncWithHttpInfo($subaccount)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -226,21 +197,35 @@ class AccountsApi
      *
      * Create a new subaccount
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\CreateAccount $subaccount Subaccount object (optional)
+     * @param  \Karix\Model\CreateAccount $subaccount Subaccount object (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function createSubaccountAsyncWithHttpInfo($api_version = '1.0', $subaccount = null)
+    public function createSubaccountAsyncWithHttpInfo($subaccount)
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse201';
-        $request = $this->createSubaccountRequest($api_version, $subaccount);
+        $returnType = '\Karix\Model\AccountResponse';
+        $request = $this->createSubaccountRequest($subaccount);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
-                function ($response) use ($returnType) {
+                function ($response) use ($request, $returnType) {
+                    $statusCode = $response->getStatusCode();
+                    if ($statusCode < 200 || $statusCode > 299) {
+                        $exception = new ApiException(
+                            sprintf(
+                                '[%d] Error connecting to the API (%s)',
+                                $statusCode,
+                                $request->getUri()
+                            ),
+                            $statusCode,
+                            $response->getHeaders(),
+                            $response->getBody()
+                        );
+                        $this->createSubaccountSetResponseObject($exception);
+                        throw $exception;
+                    }
                     $responseBody = $response->getBody();
                     if ($returnType === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
@@ -258,18 +243,31 @@ class AccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        $response = $exception->getResponse();
+                        if ($response) {
+                            $statusCode = $response->getStatusCode();
+                            $e = new ApiException(
+                                sprintf(
+                                    '[%d] Error connecting to the API (%s)',
+                                    $statusCode,
+                                    $exception->getRequest()->getUri()
+                                ),
+                                $statusCode,
+                                $response->getHeaders(),
+                                $response->getBody()
+                            );
+                            $this->createSubaccountSetResponseObject($e);
+                            throw $e;
+                        }
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? $exception->getResponse()->getBody()->getContents() : null
+                        );
+                    }
+                    throw $exception;
                 }
             );
     }
@@ -277,14 +275,27 @@ class AccountsApi
     /**
      * Create request for operation 'createSubaccount'
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\CreateAccount $subaccount Subaccount object (optional)
+     * @param  \Karix\Model\CreateAccount $subaccount Subaccount object (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function createSubaccountRequest($api_version = '1.0', $subaccount = null)
+    protected function createSubaccountRequest($subaccount)
     {
+        // set constants with only one allowable value
+        $api_version = '2.0';
+        // verify the required parameter 'api_version' is set
+        if ($api_version === null || (is_array($api_version) && count($api_version) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $api_version when calling createSubaccount'
+            );
+        }
+        // verify the required parameter 'subaccount' is set
+        if ($subaccount === null || (is_array($subaccount) && count($subaccount) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $subaccount when calling createSubaccount'
+            );
+        }
 
         $resourcePath = '/account/';
         $formParams = [];
@@ -371,21 +382,61 @@ class AccountsApi
     }
 
     /**
+    * Sets the response object for an ApiException based on status code
+    */
+    protected function createSubaccountSetResponseObject($api_exception)
+    {
+        switch ($api_exception->getCode()) {
+            case 201:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\AccountResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 400:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\ErrorResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 403:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\UnauthorizedResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 500:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\ErrorResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+        }
+    }
+
+    /**
      * Operation getSubaccount
      *
      * Get a list of accounts
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      * @param  int $offset The number of items to skip before starting to collect the result set. (optional, default to 0)
      * @param  int $limit The numbers of items to return. (optional, default to 10)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Swagger\Client\Model\InlineResponse200
+     * @return \Karix\Model\AccountListResponse
      */
-    public function getSubaccount($api_version = '1.0', $offset = '0', $limit = '10')
+    public function getSubaccount($offset = '0', $limit = '10')
     {
-        list($response) = $this->getSubaccountWithHttpInfo($api_version, $offset, $limit);
+        list($response) = $this->getSubaccountWithHttpInfo($offset, $limit);
         return $response;
     }
 
@@ -394,18 +445,17 @@ class AccountsApi
      *
      * Get a list of accounts
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      * @param  int $offset The number of items to skip before starting to collect the result set. (optional, default to 0)
      * @param  int $limit The numbers of items to return. (optional, default to 10)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Swagger\Client\Model\InlineResponse200, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Karix\Model\AccountListResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getSubaccountWithHttpInfo($api_version = '1.0', $offset = '0', $limit = '10')
+    public function getSubaccountWithHttpInfo($offset = '0', $limit = '10')
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse200';
-        $request = $this->getSubaccountRequest($api_version, $offset, $limit);
+        $returnType = '\Karix\Model\AccountListResponse';
+        $request = $this->getSubaccountRequest($offset, $limit);
 
         try {
             $options = $this->createHttpClientOption();
@@ -452,32 +502,7 @@ class AccountsApi
             ];
 
         } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse200',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 403:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse403',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse500',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
+            $this->getSubaccountSetResponseObject($e);
             throw $e;
         }
     }
@@ -487,16 +512,15 @@ class AccountsApi
      *
      * Get a list of accounts
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      * @param  int $offset The number of items to skip before starting to collect the result set. (optional, default to 0)
      * @param  int $limit The numbers of items to return. (optional, default to 10)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getSubaccountAsync($api_version = '1.0', $offset = '0', $limit = '10')
+    public function getSubaccountAsync($offset = '0', $limit = '10')
     {
-        return $this->getSubaccountAsyncWithHttpInfo($api_version, $offset, $limit)
+        return $this->getSubaccountAsyncWithHttpInfo($offset, $limit)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -509,22 +533,36 @@ class AccountsApi
      *
      * Get a list of accounts
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      * @param  int $offset The number of items to skip before starting to collect the result set. (optional, default to 0)
      * @param  int $limit The numbers of items to return. (optional, default to 10)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getSubaccountAsyncWithHttpInfo($api_version = '1.0', $offset = '0', $limit = '10')
+    public function getSubaccountAsyncWithHttpInfo($offset = '0', $limit = '10')
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse200';
-        $request = $this->getSubaccountRequest($api_version, $offset, $limit);
+        $returnType = '\Karix\Model\AccountListResponse';
+        $request = $this->getSubaccountRequest($offset, $limit);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
-                function ($response) use ($returnType) {
+                function ($response) use ($request, $returnType) {
+                    $statusCode = $response->getStatusCode();
+                    if ($statusCode < 200 || $statusCode > 299) {
+                        $exception = new ApiException(
+                            sprintf(
+                                '[%d] Error connecting to the API (%s)',
+                                $statusCode,
+                                $request->getUri()
+                            ),
+                            $statusCode,
+                            $response->getHeaders(),
+                            $response->getBody()
+                        );
+                        $this->getSubaccountSetResponseObject($exception);
+                        throw $exception;
+                    }
                     $responseBody = $response->getBody();
                     if ($returnType === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
@@ -542,18 +580,31 @@ class AccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        $response = $exception->getResponse();
+                        if ($response) {
+                            $statusCode = $response->getStatusCode();
+                            $e = new ApiException(
+                                sprintf(
+                                    '[%d] Error connecting to the API (%s)',
+                                    $statusCode,
+                                    $exception->getRequest()->getUri()
+                                ),
+                                $statusCode,
+                                $response->getHeaders(),
+                                $response->getBody()
+                            );
+                            $this->getSubaccountSetResponseObject($e);
+                            throw $e;
+                        }
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? $exception->getResponse()->getBody()->getContents() : null
+                        );
+                    }
+                    throw $exception;
                 }
             );
     }
@@ -561,15 +612,22 @@ class AccountsApi
     /**
      * Create request for operation 'getSubaccount'
      *
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      * @param  int $offset The number of items to skip before starting to collect the result set. (optional, default to 0)
      * @param  int $limit The numbers of items to return. (optional, default to 10)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function getSubaccountRequest($api_version = '1.0', $offset = '0', $limit = '10')
+    protected function getSubaccountRequest($offset = '0', $limit = '10')
     {
+        // set constants with only one allowable value
+        $api_version = '2.0';
+        // verify the required parameter 'api_version' is set
+        if ($api_version === null || (is_array($api_version) && count($api_version) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $api_version when calling getSubaccount'
+            );
+        }
 
         $resourcePath = '/account/';
         $formParams = [];
@@ -661,20 +719,52 @@ class AccountsApi
     }
 
     /**
+    * Sets the response object for an ApiException based on status code
+    */
+    protected function getSubaccountSetResponseObject($api_exception)
+    {
+        switch ($api_exception->getCode()) {
+            case 200:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\AccountListResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 403:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\UnauthorizedResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 500:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\ErrorResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+        }
+    }
+
+    /**
      * Operation getSubaccountById
      *
      * Get details of an account
      *
      * @param  string $uid Alphanumeric ID of the subaccount to get. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Swagger\Client\Model\InlineResponse201
+     * @return \Karix\Model\AccountResponse
      */
-    public function getSubaccountById($uid, $api_version = '1.0')
+    public function getSubaccountById($uid)
     {
-        list($response) = $this->getSubaccountByIdWithHttpInfo($uid, $api_version);
+        list($response) = $this->getSubaccountByIdWithHttpInfo($uid);
         return $response;
     }
 
@@ -684,16 +774,15 @@ class AccountsApi
      * Get details of an account
      *
      * @param  string $uid Alphanumeric ID of the subaccount to get. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Swagger\Client\Model\InlineResponse201, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Karix\Model\AccountResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getSubaccountByIdWithHttpInfo($uid, $api_version = '1.0')
+    public function getSubaccountByIdWithHttpInfo($uid)
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse201';
-        $request = $this->getSubaccountByIdRequest($uid, $api_version);
+        $returnType = '\Karix\Model\AccountResponse';
+        $request = $this->getSubaccountByIdRequest($uid);
 
         try {
             $options = $this->createHttpClientOption();
@@ -740,40 +829,7 @@ class AccountsApi
             ];
 
         } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse201',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 403:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse403',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 404:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse404',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse500',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
+            $this->getSubaccountByIdSetResponseObject($e);
             throw $e;
         }
     }
@@ -784,14 +840,13 @@ class AccountsApi
      * Get details of an account
      *
      * @param  string $uid Alphanumeric ID of the subaccount to get. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getSubaccountByIdAsync($uid, $api_version = '1.0')
+    public function getSubaccountByIdAsync($uid)
     {
-        return $this->getSubaccountByIdAsyncWithHttpInfo($uid, $api_version)
+        return $this->getSubaccountByIdAsyncWithHttpInfo($uid)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -805,20 +860,34 @@ class AccountsApi
      * Get details of an account
      *
      * @param  string $uid Alphanumeric ID of the subaccount to get. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getSubaccountByIdAsyncWithHttpInfo($uid, $api_version = '1.0')
+    public function getSubaccountByIdAsyncWithHttpInfo($uid)
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse201';
-        $request = $this->getSubaccountByIdRequest($uid, $api_version);
+        $returnType = '\Karix\Model\AccountResponse';
+        $request = $this->getSubaccountByIdRequest($uid);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
-                function ($response) use ($returnType) {
+                function ($response) use ($request, $returnType) {
+                    $statusCode = $response->getStatusCode();
+                    if ($statusCode < 200 || $statusCode > 299) {
+                        $exception = new ApiException(
+                            sprintf(
+                                '[%d] Error connecting to the API (%s)',
+                                $statusCode,
+                                $request->getUri()
+                            ),
+                            $statusCode,
+                            $response->getHeaders(),
+                            $response->getBody()
+                        );
+                        $this->getSubaccountByIdSetResponseObject($exception);
+                        throw $exception;
+                    }
                     $responseBody = $response->getBody();
                     if ($returnType === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
@@ -836,18 +905,31 @@ class AccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        $response = $exception->getResponse();
+                        if ($response) {
+                            $statusCode = $response->getStatusCode();
+                            $e = new ApiException(
+                                sprintf(
+                                    '[%d] Error connecting to the API (%s)',
+                                    $statusCode,
+                                    $exception->getRequest()->getUri()
+                                ),
+                                $statusCode,
+                                $response->getHeaders(),
+                                $response->getBody()
+                            );
+                            $this->getSubaccountByIdSetResponseObject($e);
+                            throw $e;
+                        }
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? $exception->getResponse()->getBody()->getContents() : null
+                        );
+                    }
+                    throw $exception;
                 }
             );
     }
@@ -856,15 +938,22 @@ class AccountsApi
      * Create request for operation 'getSubaccountById'
      *
      * @param  string $uid Alphanumeric ID of the subaccount to get. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function getSubaccountByIdRequest($uid, $api_version = '1.0')
+    protected function getSubaccountByIdRequest($uid)
     {
+        // set constants with only one allowable value
+        $api_version = '2.0';
+        // verify the required parameter 'api_version' is set
+        if ($api_version === null || (is_array($api_version) && count($api_version) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $api_version when calling getSubaccountById'
+            );
+        }
         // verify the required parameter 'uid' is set
-        if ($uid === null) {
+        if ($uid === null || (is_array($uid) && count($uid) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $uid when calling getSubaccountById'
             );
@@ -960,21 +1049,61 @@ class AccountsApi
     }
 
     /**
+    * Sets the response object for an ApiException based on status code
+    */
+    protected function getSubaccountByIdSetResponseObject($api_exception)
+    {
+        switch ($api_exception->getCode()) {
+            case 200:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\AccountResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 403:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\UnauthorizedResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 404:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\NotFoundResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 500:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\ErrorResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+        }
+    }
+
+    /**
      * Operation patchSubaccount
      *
      * Edit an account
      *
      * @param  string $uid Alphanumeric ID of the account/subaccount to edit. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\EditAccount $subaccount Subaccount object (optional)
+     * @param  \Karix\Model\EditAccount $subaccount Subaccount object (required)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Swagger\Client\Model\InlineResponse201
+     * @return \Karix\Model\AccountResponse
      */
-    public function patchSubaccount($uid, $api_version = '1.0', $subaccount = null)
+    public function patchSubaccount($uid, $subaccount)
     {
-        list($response) = $this->patchSubaccountWithHttpInfo($uid, $api_version, $subaccount);
+        list($response) = $this->patchSubaccountWithHttpInfo($uid, $subaccount);
         return $response;
     }
 
@@ -984,17 +1113,16 @@ class AccountsApi
      * Edit an account
      *
      * @param  string $uid Alphanumeric ID of the account/subaccount to edit. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\EditAccount $subaccount Subaccount object (optional)
+     * @param  \Karix\Model\EditAccount $subaccount Subaccount object (required)
      *
-     * @throws \Swagger\Client\ApiException on non-2xx response
+     * @throws \Karix\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Swagger\Client\Model\InlineResponse201, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Karix\Model\AccountResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function patchSubaccountWithHttpInfo($uid, $api_version = '1.0', $subaccount = null)
+    public function patchSubaccountWithHttpInfo($uid, $subaccount)
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse201';
-        $request = $this->patchSubaccountRequest($uid, $api_version, $subaccount);
+        $returnType = '\Karix\Model\AccountResponse';
+        $request = $this->patchSubaccountRequest($uid, $subaccount);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1041,40 +1169,7 @@ class AccountsApi
             ];
 
         } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse201',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 403:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse403',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 404:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse404',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Swagger\Client\Model\InlineResponse500',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
+            $this->patchSubaccountSetResponseObject($e);
             throw $e;
         }
     }
@@ -1085,15 +1180,14 @@ class AccountsApi
      * Edit an account
      *
      * @param  string $uid Alphanumeric ID of the account/subaccount to edit. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\EditAccount $subaccount Subaccount object (optional)
+     * @param  \Karix\Model\EditAccount $subaccount Subaccount object (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function patchSubaccountAsync($uid, $api_version = '1.0', $subaccount = null)
+    public function patchSubaccountAsync($uid, $subaccount)
     {
-        return $this->patchSubaccountAsyncWithHttpInfo($uid, $api_version, $subaccount)
+        return $this->patchSubaccountAsyncWithHttpInfo($uid, $subaccount)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1107,21 +1201,35 @@ class AccountsApi
      * Edit an account
      *
      * @param  string $uid Alphanumeric ID of the account/subaccount to edit. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\EditAccount $subaccount Subaccount object (optional)
+     * @param  \Karix\Model\EditAccount $subaccount Subaccount object (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function patchSubaccountAsyncWithHttpInfo($uid, $api_version = '1.0', $subaccount = null)
+    public function patchSubaccountAsyncWithHttpInfo($uid, $subaccount)
     {
-        $returnType = '\Swagger\Client\Model\InlineResponse201';
-        $request = $this->patchSubaccountRequest($uid, $api_version, $subaccount);
+        $returnType = '\Karix\Model\AccountResponse';
+        $request = $this->patchSubaccountRequest($uid, $subaccount);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
-                function ($response) use ($returnType) {
+                function ($response) use ($request, $returnType) {
+                    $statusCode = $response->getStatusCode();
+                    if ($statusCode < 200 || $statusCode > 299) {
+                        $exception = new ApiException(
+                            sprintf(
+                                '[%d] Error connecting to the API (%s)',
+                                $statusCode,
+                                $request->getUri()
+                            ),
+                            $statusCode,
+                            $response->getHeaders(),
+                            $response->getBody()
+                        );
+                        $this->patchSubaccountSetResponseObject($exception);
+                        throw $exception;
+                    }
                     $responseBody = $response->getBody();
                     if ($returnType === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
@@ -1139,18 +1247,31 @@ class AccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        $response = $exception->getResponse();
+                        if ($response) {
+                            $statusCode = $response->getStatusCode();
+                            $e = new ApiException(
+                                sprintf(
+                                    '[%d] Error connecting to the API (%s)',
+                                    $statusCode,
+                                    $exception->getRequest()->getUri()
+                                ),
+                                $statusCode,
+                                $response->getHeaders(),
+                                $response->getBody()
+                            );
+                            $this->patchSubaccountSetResponseObject($e);
+                            throw $e;
+                        }
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? $exception->getResponse()->getBody()->getContents() : null
+                        );
+                    }
+                    throw $exception;
                 }
             );
     }
@@ -1159,18 +1280,31 @@ class AccountsApi
      * Create request for operation 'patchSubaccount'
      *
      * @param  string $uid Alphanumeric ID of the account/subaccount to edit. (required)
-     * @param  string $api_version API Version. If not specified your pinned verison is used. (optional, default to 1.0)
-     * @param  \Swagger\Client\Model\EditAccount $subaccount Subaccount object (optional)
+     * @param  \Karix\Model\EditAccount $subaccount Subaccount object (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function patchSubaccountRequest($uid, $api_version = '1.0', $subaccount = null)
+    protected function patchSubaccountRequest($uid, $subaccount)
     {
+        // set constants with only one allowable value
+        $api_version = '2.0';
+        // verify the required parameter 'api_version' is set
+        if ($api_version === null || (is_array($api_version) && count($api_version) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $api_version when calling patchSubaccount'
+            );
+        }
         // verify the required parameter 'uid' is set
-        if ($uid === null) {
+        if ($uid === null || (is_array($uid) && count($uid) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $uid when calling patchSubaccount'
+            );
+        }
+        // verify the required parameter 'subaccount' is set
+        if ($subaccount === null || (is_array($subaccount) && count($subaccount) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $subaccount when calling patchSubaccount'
             );
         }
 
@@ -1264,6 +1398,47 @@ class AccountsApi
             $headers,
             $httpBody
         );
+    }
+
+    /**
+    * Sets the response object for an ApiException based on status code
+    */
+    protected function patchSubaccountSetResponseObject($api_exception)
+    {
+        switch ($api_exception->getCode()) {
+            case 200:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\AccountResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 403:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\UnauthorizedResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 404:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\NotFoundResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+            case 500:
+                $data = ObjectSerializer::deserialize(
+                    $api_exception->getResponseBody(),
+                    '\Karix\Model\ErrorResponse',
+                    $api_exception->getResponseHeaders()
+                );
+                $api_exception->setResponseObject($data);
+                break;
+        }
     }
 
     /**

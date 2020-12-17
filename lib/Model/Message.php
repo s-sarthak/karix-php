@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -13,12 +13,12 @@
 /**
  * karix api
  *
- * # Overview  Karix API lets you interact with the Karix platform. It allows you to query your account, set up webhooks, send messages and buy phone numbers.  # API and Clients Versioning  Karix APIs are versioned using the format vX.Y where X is the major version number and Y is minor. All minor version changes are backwards compatible but major releases are not. Please be careful when upgrading.  A new user account is pinned to the latest version at the time of first request. By default every request sent Karix is processed using that version, even if there have been subsequent breaking changes. This is done to prevent existing user applications from breaking. You can change the pinned version for your account using the account dashboard. The default API version can be overridden by specifying the header `api-version`. Note: Specifying this value will not change your pinned version for other calls.  Karix also provides HTTP API clients for all major languages. Release versions of these clients correspond to their API Version supported. Client version vX.Y.Z supports API version vX.Y. HTTP Clients are configured to use `api-version` header for that client version. When using official Karix HTTP Clients only, you dont need to concern yourself with pinned version. To upgrade your API version simply update the client.  # Common Request Structures  All Karix APIs follow a common REST format with the following resources:   - account   - message   - webhook   - number  ## Creating a resource To create a request send a `POST` request with the desired parameters in a JSON object to `/<resource>/` url. A successful response will contain the details of the single resource created with HTTP status code `201 Created`. Note: An exception to this is the `Create Message` API which is a bulk API and returns       a list of message records.  ## Fetching a resource To fetch a resource by its Unique ID send a `GET` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will contain the details of the single resource fetched with HTTP status code `200 OK`  ## Editing a resource To edit certain parameters of a resource send a `PATCH` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource, with a JSON object containing only the parameters which need to be updated. Edit resource APIs generally have no required parameters. A successful response will contain all the details of the single resource after editing.  ## Deleting a resource To delete a resource send a `DELETE` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will return HTTP status code `204 No Content` with no body.  ## Fetching a list of resources To fetch a list of resources send a `GET` request to `/<resource>/` with filters as GET parameters. A successful response will contain a list of filtered paginated objects with HTTP status code `200 OK`.  ### Pagination Pagination for list APIs are controlled using GET parameters:   - `limit`: Number of objects to be returned   - `offset`: Number of objects to skip before collecting the output list.  # Common Response Structures  All Karix APIs follow some common respose structures.  ## Success Responses  ### Single Resource Response  Responses returning a single object will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | data          |               | Details of the object                     |  ### List Resource Response  Responses returning a list of objects will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | |               | previous      | Link to the previous page of the list     | |               | next          | Link to the next page of the list         | |               | count         | Total number of objects over all pages    | |               | limit         | Limit the API was requested with          | |               | offset        | Page Offset the API was requested with    | | objects       |               | List of objects with details              |  ## Error Responses  ### Validation Error Response  Responses for requests which failed due to validation errors will have the follwing keys: | Key           | Child Key     | Description                                | |:------------- |:------------- |:------------------------------------------ | | meta          |               | Meta Details about request and response    | |               | request_uuid  | Unique request identifier                  | | error         |               | Details for the error                      | |               | message       | Error message                              | |               | param         | (Optional) parameter this error relates to |  Validation error responses will return HTTP Status Code `400 Bad Request`  ### Insufficient Balance Response  Some requests will require to consume account credits. In case of insufficient balance the following keys will be returned: | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | error         |               | Details for the error                     | |               | message       | `Insufficient Balance`                    |  Insufficient balance response will return HTTP Status Code `402 Payment Required`
+ * Karix API lets you interact with the Karix platform using an omnichannel messaging API. It also allows you to query your account, set up webhooks and buy phone numbers.
  *
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 2.0
  * Contact: support@karix.io
  * Generated by: https://github.com/swagger-api/swagger-codegen.git
- * Swagger Codegen version: 2.3.1
+ * Swagger Codegen version: unset
  */
 
 /**
@@ -27,16 +27,16 @@
  * Do not edit the class manually.
  */
 
-namespace Swagger\Client\Model;
+namespace Karix\Model;
 
 use \ArrayAccess;
-use \Swagger\Client\ObjectSerializer;
+use \Karix\ObjectSerializer;
 
 /**
  * Message Class Doc Comment
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -59,22 +59,22 @@ class Message implements ModelInterface, ArrayAccess
     protected static $swaggerTypes = [
         'uid' => 'string',
         'account_uid' => 'string',
+        'total_cost' => 'BigDecimal',
+        'refund' => 'BigDecimal',
         'source' => 'string',
         'destination' => 'string',
+        'country' => 'string',
+        'content_type' => 'string',
+        'content' => '\Karix\Model\MessageContent',
+        'created_time' => '\DateTime',
+        'sent_time' => '\DateTime',
+        'delivered_time' => '\DateTime',
+        'updated_time' => '\DateTime',
         'status' => 'string',
-        'text' => 'string',
-        'queued_time' => 'string',
-        'sent_time' => 'string',
-        'updated_time' => 'string',
         'direction' => 'string',
-        'error' => '\Swagger\Client\Model\MessageError',
-        'rate' => 'string',
-        'refund' => 'string',
-        'total_cost' => 'string',
-        'parts' => 'int',
-        'message_type' => 'string',
-        'mobile_country_code' => 'string',
-        'mobile_network_code' => 'string'
+        'error' => '\Karix\Model\MessageError',
+        'redact' => 'bool',
+        'channel_details' => '\Karix\Model\MessageChannelDetails'
     ];
 
     /**
@@ -85,28 +85,30 @@ class Message implements ModelInterface, ArrayAccess
     protected static $swaggerFormats = [
         'uid' => null,
         'account_uid' => null,
+        'total_cost' => 'number',
+        'refund' => 'number',
         'source' => null,
         'destination' => null,
+        'country' => null,
+        'content_type' => null,
+        'content' => null,
+        'created_time' => 'date-time',
+        'sent_time' => 'date-time',
+        'delivered_time' => 'date-time',
+        'updated_time' => 'date-time',
         'status' => null,
-        'text' => null,
-        'queued_time' => null,
-        'sent_time' => null,
-        'updated_time' => null,
         'direction' => null,
         'error' => null,
-        'rate' => 'number',
-        'refund' => 'number',
-        'total_cost' => null,
-        'parts' => null,
-        'message_type' => null,
-        'mobile_country_code' => null,
-        'mobile_network_code' => null
+        'redact' => null,
+        'channel_details' => null
     ];
 
     /**
      * Array of property to type mappings. Used for (de)serialization
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function swaggerTypes()
     {
@@ -117,6 +119,8 @@ class Message implements ModelInterface, ArrayAccess
      * Array of property to format mappings. Used for (de)serialization
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function swaggerFormats()
     {
@@ -128,26 +132,28 @@ class Message implements ModelInterface, ArrayAccess
      * and the value is the original name
      *
      * @var string[]
+     *
+     * @codeCoverageIgnore
      */
     protected static $attributeMap = [
         'uid' => 'uid',
         'account_uid' => 'account_uid',
+        'total_cost' => 'total_cost',
+        'refund' => 'refund',
         'source' => 'source',
         'destination' => 'destination',
-        'status' => 'status',
-        'text' => 'text',
-        'queued_time' => 'queued_time',
+        'country' => 'country',
+        'content_type' => 'content_type',
+        'content' => 'content',
+        'created_time' => 'created_time',
         'sent_time' => 'sent_time',
+        'delivered_time' => 'delivered_time',
         'updated_time' => 'updated_time',
+        'status' => 'status',
         'direction' => 'direction',
         'error' => 'error',
-        'rate' => 'rate',
-        'refund' => 'refund',
-        'total_cost' => 'total_cost',
-        'parts' => 'parts',
-        'message_type' => 'message_type',
-        'mobile_country_code' => 'mobile_country_code',
-        'mobile_network_code' => 'mobile_network_code'
+        'redact' => 'redact',
+        'channel_details' => 'channel_details'
     ];
 
     /**
@@ -158,22 +164,22 @@ class Message implements ModelInterface, ArrayAccess
     protected static $setters = [
         'uid' => 'setUid',
         'account_uid' => 'setAccountUid',
+        'total_cost' => 'setTotalCost',
+        'refund' => 'setRefund',
         'source' => 'setSource',
         'destination' => 'setDestination',
-        'status' => 'setStatus',
-        'text' => 'setText',
-        'queued_time' => 'setQueuedTime',
+        'country' => 'setCountry',
+        'content_type' => 'setContentType',
+        'content' => 'setContent',
+        'created_time' => 'setCreatedTime',
         'sent_time' => 'setSentTime',
+        'delivered_time' => 'setDeliveredTime',
         'updated_time' => 'setUpdatedTime',
+        'status' => 'setStatus',
         'direction' => 'setDirection',
         'error' => 'setError',
-        'rate' => 'setRate',
-        'refund' => 'setRefund',
-        'total_cost' => 'setTotalCost',
-        'parts' => 'setParts',
-        'message_type' => 'setMessageType',
-        'mobile_country_code' => 'setMobileCountryCode',
-        'mobile_network_code' => 'setMobileNetworkCode'
+        'redact' => 'setRedact',
+        'channel_details' => 'setChannelDetails'
     ];
 
     /**
@@ -184,22 +190,22 @@ class Message implements ModelInterface, ArrayAccess
     protected static $getters = [
         'uid' => 'getUid',
         'account_uid' => 'getAccountUid',
+        'total_cost' => 'getTotalCost',
+        'refund' => 'getRefund',
         'source' => 'getSource',
         'destination' => 'getDestination',
-        'status' => 'getStatus',
-        'text' => 'getText',
-        'queued_time' => 'getQueuedTime',
+        'country' => 'getCountry',
+        'content_type' => 'getContentType',
+        'content' => 'getContent',
+        'created_time' => 'getCreatedTime',
         'sent_time' => 'getSentTime',
+        'delivered_time' => 'getDeliveredTime',
         'updated_time' => 'getUpdatedTime',
+        'status' => 'getStatus',
         'direction' => 'getDirection',
         'error' => 'getError',
-        'rate' => 'getRate',
-        'refund' => 'getRefund',
-        'total_cost' => 'getTotalCost',
-        'parts' => 'getParts',
-        'message_type' => 'getMessageType',
-        'mobile_country_code' => 'getMobileCountryCode',
-        'mobile_network_code' => 'getMobileNetworkCode'
+        'redact' => 'getRedact',
+        'channel_details' => 'getChannelDetails'
     ];
 
     /**
@@ -207,6 +213,8 @@ class Message implements ModelInterface, ArrayAccess
      * and the value is the original name
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function attributeMap()
     {
@@ -217,6 +225,8 @@ class Message implements ModelInterface, ArrayAccess
      * Array of attributes to setter functions (for deserialization of responses)
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function setters()
     {
@@ -227,6 +237,8 @@ class Message implements ModelInterface, ArrayAccess
      * Array of attributes to getter functions (for serialization of requests)
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function getters()
     {
@@ -237,22 +249,40 @@ class Message implements ModelInterface, ArrayAccess
      * The original name of the model.
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function getModelName()
     {
         return self::$swaggerModelName;
     }
 
+    const CONTENT_TYPE_TEXT = 'text';
+    const CONTENT_TYPE_LOCATION = 'location';
     const STATUS_QUEUED = 'queued';
     const STATUS_SENT = 'sent';
     const STATUS_FAILED = 'failed';
     const STATUS_DELIVERED = 'delivered';
+    const STATUS_READ = 'read';
     const STATUS_UNDELIVERED = 'undelivered';
     const STATUS_REJECTED = 'rejected';
     const DIRECTION_INBOUND = 'inbound';
     const DIRECTION_OUTBOUND = 'outbound';
     
 
+    
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getContentTypeAllowableValues()
+    {
+        return [
+            self::CONTENT_TYPE_TEXT,
+            self::CONTENT_TYPE_LOCATION,
+        ];
+    }
     
     /**
      * Gets allowable values of the enum
@@ -266,6 +296,7 @@ class Message implements ModelInterface, ArrayAccess
             self::STATUS_SENT,
             self::STATUS_FAILED,
             self::STATUS_DELIVERED,
+            self::STATUS_READ,
             self::STATUS_UNDELIVERED,
             self::STATUS_REJECTED,
         ];
@@ -302,22 +333,22 @@ class Message implements ModelInterface, ArrayAccess
     {
         $this->container['uid'] = isset($data['uid']) ? $data['uid'] : null;
         $this->container['account_uid'] = isset($data['account_uid']) ? $data['account_uid'] : null;
+        $this->container['total_cost'] = isset($data['total_cost']) ? $data['total_cost'] : null;
+        $this->container['refund'] = isset($data['refund']) ? $data['refund'] : null;
         $this->container['source'] = isset($data['source']) ? $data['source'] : null;
         $this->container['destination'] = isset($data['destination']) ? $data['destination'] : null;
-        $this->container['status'] = isset($data['status']) ? $data['status'] : null;
-        $this->container['text'] = isset($data['text']) ? $data['text'] : null;
-        $this->container['queued_time'] = isset($data['queued_time']) ? $data['queued_time'] : null;
+        $this->container['country'] = isset($data['country']) ? $data['country'] : null;
+        $this->container['content_type'] = isset($data['content_type']) ? $data['content_type'] : null;
+        $this->container['content'] = isset($data['content']) ? $data['content'] : null;
+        $this->container['created_time'] = isset($data['created_time']) ? $data['created_time'] : null;
         $this->container['sent_time'] = isset($data['sent_time']) ? $data['sent_time'] : null;
+        $this->container['delivered_time'] = isset($data['delivered_time']) ? $data['delivered_time'] : null;
         $this->container['updated_time'] = isset($data['updated_time']) ? $data['updated_time'] : null;
+        $this->container['status'] = isset($data['status']) ? $data['status'] : null;
         $this->container['direction'] = isset($data['direction']) ? $data['direction'] : null;
         $this->container['error'] = isset($data['error']) ? $data['error'] : null;
-        $this->container['rate'] = isset($data['rate']) ? $data['rate'] : null;
-        $this->container['refund'] = isset($data['refund']) ? $data['refund'] : null;
-        $this->container['total_cost'] = isset($data['total_cost']) ? $data['total_cost'] : null;
-        $this->container['parts'] = isset($data['parts']) ? $data['parts'] : null;
-        $this->container['message_type'] = isset($data['message_type']) ? $data['message_type'] : null;
-        $this->container['mobile_country_code'] = isset($data['mobile_country_code']) ? $data['mobile_country_code'] : null;
-        $this->container['mobile_network_code'] = isset($data['mobile_network_code']) ? $data['mobile_network_code'] : null;
+        $this->container['redact'] = isset($data['redact']) ? $data['redact'] : null;
+        $this->container['channel_details'] = isset($data['channel_details']) ? $data['channel_details'] : null;
     }
 
     /**
@@ -329,8 +360,16 @@ class Message implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
+        $allowedValues = $this->getContentTypeAllowableValues();
+        if (!is_null($this->container['content_type']) && !in_array($this->container['content_type'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value for 'content_type', must be one of '%s'",
+                implode("', '", $allowedValues)
+            );
+        }
+
         $allowedValues = $this->getStatusAllowableValues();
-        if (!in_array($this->container['status'], $allowedValues)) {
+        if (!is_null($this->container['status']) && !in_array($this->container['status'], $allowedValues, true)) {
             $invalidProperties[] = sprintf(
                 "invalid value for 'status', must be one of '%s'",
                 implode("', '", $allowedValues)
@@ -338,7 +377,7 @@ class Message implements ModelInterface, ArrayAccess
         }
 
         $allowedValues = $this->getDirectionAllowableValues();
-        if (!in_array($this->container['direction'], $allowedValues)) {
+        if (!is_null($this->container['direction']) && !in_array($this->container['direction'], $allowedValues, true)) {
             $invalidProperties[] = sprintf(
                 "invalid value for 'direction', must be one of '%s'",
                 implode("', '", $allowedValues)
@@ -356,16 +395,7 @@ class Message implements ModelInterface, ArrayAccess
      */
     public function valid()
     {
-
-        $allowedValues = $this->getStatusAllowableValues();
-        if (!in_array($this->container['status'], $allowedValues)) {
-            return false;
-        }
-        $allowedValues = $this->getDirectionAllowableValues();
-        if (!in_array($this->container['direction'], $allowedValues)) {
-            return false;
-        }
-        return true;
+        return count($this->listInvalidProperties()) === 0;
     }
 
 
@@ -413,6 +443,54 @@ class Message implements ModelInterface, ArrayAccess
     public function setAccountUid($account_uid)
     {
         $this->container['account_uid'] = $account_uid;
+
+        return $this;
+    }
+
+    /**
+     * Gets total_cost
+     *
+     * @return BigDecimal
+     */
+    public function getTotalCost()
+    {
+        return $this->container['total_cost'];
+    }
+
+    /**
+     * Sets total_cost
+     *
+     * @param BigDecimal $total_cost Total cost deducted from your credits for this message - `total_cost` will reflect refunds for this message. If there was a complete   refund, the `total_cost` will be zero.
+     *
+     * @return $this
+     */
+    public function setTotalCost($total_cost)
+    {
+        $this->container['total_cost'] = $total_cost;
+
+        return $this;
+    }
+
+    /**
+     * Gets refund
+     *
+     * @return BigDecimal
+     */
+    public function getRefund()
+    {
+        return $this->container['refund'];
+    }
+
+    /**
+     * Sets refund
+     *
+     * @param BigDecimal $refund If a refund was processed for this message `refund` will be a non-null number
+     *
+     * @return $this
+     */
+    public function setRefund($refund)
+    {
+        $this->container['refund'] = $refund;
 
         return $this;
     }
@@ -466,82 +544,106 @@ class Message implements ModelInterface, ArrayAccess
     }
 
     /**
-     * Gets status
+     * Gets country
      *
      * @return string
      */
-    public function getStatus()
+    public function getCountry()
     {
-        return $this->container['status'];
+        return $this->container['country'];
     }
 
     /**
-     * Sets status
+     * Sets country
      *
-     * @param string $status Current status of the message. Possible values: - `queued`: Message has been queued in Karix system             (for either `inbound` or `outbound` direction) - `sent`: The `outbound` message has been sent to carriers for delivery - `failed`: In case of `outbound` message, this means that Karix failed             to send the message to a carrier.             In case of `inbound` message, this means that Karix failed             to send the message to its webhook, if configured. - `delivered`: The `outbound` message was delivered to its receiver. - `undelivered`: The `outbound` message falied to be delivered to its receiver. - `rejected`: The `outbound` message was rejected by the chosen carrier.
+     * @param string $country ISO2 code of the country where the destination belongs to
      *
      * @return $this
      */
-    public function setStatus($status)
+    public function setCountry($country)
     {
-        $allowedValues = $this->getStatusAllowableValues();
-        if (!is_null($status) && !in_array($status, $allowedValues)) {
+        $this->container['country'] = $country;
+
+        return $this;
+    }
+
+    /**
+     * Gets content_type
+     *
+     * @return string
+     */
+    public function getContentType()
+    {
+        return $this->container['content_type'];
+    }
+
+    /**
+     * Sets content_type
+     *
+     * @param string $content_type Content type of the message. - Its value will correspond to the key present in the `content`.
+     *
+     * @return $this
+     */
+    public function setContentType($content_type)
+    {
+        $allowedValues = $this->getContentTypeAllowableValues();
+        if (!is_null($content_type) && !in_array($content_type, $allowedValues, true)) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    "Invalid value for 'status', must be one of '%s'",
+                    "Invalid value for 'content_type', must be one of '%s'",
                     implode("', '", $allowedValues)
                 )
             );
         }
-        $this->container['status'] = $status;
+        $this->container['content_type'] = $content_type;
 
         return $this;
     }
 
     /**
-     * Gets text
+     * Gets content
      *
-     * @return string
+     * @return \Karix\Model\MessageContent
      */
-    public function getText()
+    public function getContent()
     {
-        return $this->container['text'];
+        return $this->container['content'];
     }
 
     /**
-     * Sets text
+     * Sets content
      *
-     * @param string $text Text of the message to be sent. - Message can contain non-GSM and unicode characters - A GSM only message with more than 160 characters will be automatically broken   into parts each of length 153 for billing purposes - A Non-GSM (and unicode) message with more than 70 characters will be automatically   broken into parts each of length 67 for billing purposes
+     * @param \Karix\Model\MessageContent $content content
      *
      * @return $this
      */
-    public function setText($text)
+    public function setContent($content)
     {
-        $this->container['text'] = $text;
+        $this->container['content'] = $content;
 
         return $this;
     }
 
     /**
-     * Gets queued_time
+     * Gets created_time
      *
      * @return \DateTime
      */
-    public function getQueuedTime()
+    public function getCreatedTime()
     {
-        return $this->container['queued_time'];
+        return $this->container['created_time'];
     }
 
     /**
-     * Sets queued_time
+     * Sets created_time
      *
-     * @param \DateTime $queued_time The timestamp when message was accepted and queued in Karix system
+     * @param \DateTime $created_time Timestamp when the message was created
      *
      * @return $this
      */
-    public function setQueuedTime($queued_time)
+    public function setCreatedTime($created_time)
     {
-        $this->container['queued_time'] = $queued_time;
+        $this->container['created_time'] = $created_time;
 
         return $this;
     }
@@ -559,13 +661,37 @@ class Message implements ModelInterface, ArrayAccess
     /**
      * Sets sent_time
      *
-     * @param \DateTime $sent_time The timestamp when the message was processed and sent to destination
+     * @param \DateTime $sent_time Timestamp when message was sent to the selected channel
      *
      * @return $this
      */
     public function setSentTime($sent_time)
     {
         $this->container['sent_time'] = $sent_time;
+
+        return $this;
+    }
+
+    /**
+     * Gets delivered_time
+     *
+     * @return \DateTime
+     */
+    public function getDeliveredTime()
+    {
+        return $this->container['delivered_time'];
+    }
+
+    /**
+     * Sets delivered_time
+     *
+     * @param \DateTime $delivered_time Timestamp when the message was delivered to the destination
+     *
+     * @return $this
+     */
+    public function setDeliveredTime($delivered_time)
+    {
+        $this->container['delivered_time'] = $delivered_time;
 
         return $this;
     }
@@ -583,13 +709,46 @@ class Message implements ModelInterface, ArrayAccess
     /**
      * Sets updated_time
      *
-     * @param \DateTime $updated_time The timestamp when the status of message was last updated. - If the current status is `delivered` then this timestamp also represents   delivered time - If the current status is `undelivered` then this timestamp also represents   undelivered time
+     * @param \DateTime $updated_time Timestamp when the message status was last updated - If the current status is `read`, then this timestamp also represents   read time - If the current status is `undelivered` then this timestamp also represents   undelivered time
      *
      * @return $this
      */
     public function setUpdatedTime($updated_time)
     {
         $this->container['updated_time'] = $updated_time;
+
+        return $this;
+    }
+
+    /**
+     * Gets status
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->container['status'];
+    }
+
+    /**
+     * Sets status
+     *
+     * @param string $status Current status of the message. Possible values: - `queued`: Message has been queued in Karix system             (for either `inbound` or `outbound` direction) - `sent`: The `outbound` message has been sent to carriers for delivery - `failed`: In case of `outbound` message, this means that Karix failed             to send the message to a carrier.             In case of `inbound` message, this means that Karix failed             to send the message to its webhook, if configured. - `delivered`: The `outbound` message was delivered to its receiver. - `read`: The outbound message was delivered and read by the the receiver.           Not supported by `sms` channel. - `undelivered`: The `outbound` message falied to be delivered to its receiver. - `rejected`: The `outbound` message was rejected by the chosen carrier.
+     *
+     * @return $this
+     */
+    public function setStatus($status)
+    {
+        $allowedValues = $this->getStatusAllowableValues();
+        if (!is_null($status) && !in_array($status, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value for 'status', must be one of '%s'",
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['status'] = $status;
 
         return $this;
     }
@@ -614,7 +773,7 @@ class Message implements ModelInterface, ArrayAccess
     public function setDirection($direction)
     {
         $allowedValues = $this->getDirectionAllowableValues();
-        if (!is_null($direction) && !in_array($direction, $allowedValues)) {
+        if (!is_null($direction) && !in_array($direction, $allowedValues, true)) {
             throw new \InvalidArgumentException(
                 sprintf(
                     "Invalid value for 'direction', must be one of '%s'",
@@ -630,7 +789,7 @@ class Message implements ModelInterface, ArrayAccess
     /**
      * Gets error
      *
-     * @return \Swagger\Client\Model\MessageError
+     * @return \Karix\Model\MessageError
      */
     public function getError()
     {
@@ -640,7 +799,7 @@ class Message implements ModelInterface, ArrayAccess
     /**
      * Sets error
      *
-     * @param \Swagger\Client\Model\MessageError $error error
+     * @param \Karix\Model\MessageError $error error
      *
      * @return $this
      */
@@ -652,169 +811,49 @@ class Message implements ModelInterface, ArrayAccess
     }
 
     /**
-     * Gets rate
+     * Gets redact
      *
-     * @return BigDecimal
+     * @return bool
      */
-    public function getRate()
+    public function getRedact()
     {
-        return $this->container['rate'];
+        return $this->container['redact'];
     }
 
     /**
-     * Sets rate
+     * Sets redact
      *
-     * @param BigDecimal $rate Cost per part of this message. Refer to [`text`](#/definitions/Message/properties/text)
+     * @param bool $redact If the message was redacted using redact message API, then `redact` will be `true`.
      *
      * @return $this
      */
-    public function setRate($rate)
+    public function setRedact($redact)
     {
-        $this->container['rate'] = $rate;
+        $this->container['redact'] = $redact;
 
         return $this;
     }
 
     /**
-     * Gets refund
+     * Gets channel_details
      *
-     * @return BigDecimal
+     * @return \Karix\Model\MessageChannelDetails
      */
-    public function getRefund()
+    public function getChannelDetails()
     {
-        return $this->container['refund'];
+        return $this->container['channel_details'];
     }
 
     /**
-     * Sets refund
+     * Sets channel_details
      *
-     * @param BigDecimal $refund In case we are unable to send the message to destination after queueing we will refund the `total_cost` you were charged. `null` if there was no refund.
+     * @param \Karix\Model\MessageChannelDetails $channel_details channel_details
      *
      * @return $this
      */
-    public function setRefund($refund)
+    public function setChannelDetails($channel_details)
     {
-        $this->container['refund'] = $refund;
-
-        return $this;
-    }
-
-    /**
-     * Gets total_cost
-     *
-     * @return string
-     */
-    public function getTotalCost()
-    {
-        return $this->container['total_cost'];
-    }
-
-    /**
-     * Sets total_cost
-     *
-     * @param string $total_cost Total cost for this message including all parts. Refer to [`text`](#/definitions/Message/properties/text)
-     *
-     * @return $this
-     */
-    public function setTotalCost($total_cost)
-    {
-        $this->container['total_cost'] = $total_cost;
-
-        return $this;
-    }
-
-    /**
-     * Gets parts
-     *
-     * @return int
-     */
-    public function getParts()
-    {
-        return $this->container['parts'];
-    }
-
-    /**
-     * Sets parts
-     *
-     * @param int $parts Number of parts to the message if the message was too long Refer to [`text`](#/definitions/Message/properties/text)
-     *
-     * @return $this
-     */
-    public function setParts($parts)
-    {
-        $this->container['parts'] = $parts;
-
-        return $this;
-    }
-
-    /**
-     * Gets message_type
-     *
-     * @return string
-     */
-    public function getMessageType()
-    {
-        return $this->container['message_type'];
-    }
-
-    /**
-     * Sets message_type
-     *
-     * @param string $message_type message_type
-     *
-     * @return $this
-     */
-    public function setMessageType($message_type)
-    {
-        $this->container['message_type'] = $message_type;
-
-        return $this;
-    }
-
-    /**
-     * Gets mobile_country_code
-     *
-     * @return string
-     */
-    public function getMobileCountryCode()
-    {
-        return $this->container['mobile_country_code'];
-    }
-
-    /**
-     * Sets mobile_country_code
-     *
-     * @param string $mobile_country_code Mobile Country Code of the destination number. Refer to [Wikipedia: Mobile country code](https://en.wikipedia.org/wiki/Mobile_country_code)
-     *
-     * @return $this
-     */
-    public function setMobileCountryCode($mobile_country_code)
-    {
-        $this->container['mobile_country_code'] = $mobile_country_code;
-
-        return $this;
-    }
-
-    /**
-     * Gets mobile_network_code
-     *
-     * @return string
-     */
-    public function getMobileNetworkCode()
-    {
-        return $this->container['mobile_network_code'];
-    }
-
-    /**
-     * Sets mobile_network_code
-     *
-     * @param string $mobile_network_code Mobile Network Code of the destination number. Refer to [Wikipedia: Mobile country code](https://en.wikipedia.org/wiki/Mobile_country_code)
-     *
-     * @return $this
-     */
-    public function setMobileNetworkCode($mobile_network_code)
-    {
-        $this->container['mobile_network_code'] = $mobile_network_code;
+        $this->container['channel_details'] = $channel_details;
 
         return $this;
     }
@@ -824,6 +863,8 @@ class Message implements ModelInterface, ArrayAccess
      * @param integer $offset Offset
      *
      * @return boolean
+     *
+     * @codeCoverageIgnore
      */
     public function offsetExists($offset)
     {
@@ -836,6 +877,8 @@ class Message implements ModelInterface, ArrayAccess
      * @param integer $offset Offset
      *
      * @return mixed
+     *
+     * @codeCoverageIgnore
      */
     public function offsetGet($offset)
     {
@@ -849,6 +892,8 @@ class Message implements ModelInterface, ArrayAccess
      * @param mixed   $value  Value to be set
      *
      * @return void
+     *
+     * @codeCoverageIgnore
      */
     public function offsetSet($offset, $value)
     {
@@ -865,6 +910,8 @@ class Message implements ModelInterface, ArrayAccess
      * @param integer $offset Offset
      *
      * @return void
+     *
+     * @codeCoverageIgnore
      */
     public function offsetUnset($offset)
     {
@@ -875,6 +922,8 @@ class Message implements ModelInterface, ArrayAccess
      * Gets the string presentation of the object
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function __toString()
     {

@@ -4,7 +4,7 @@
  * PHP version 5
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -12,12 +12,12 @@
 /**
  * karix api
  *
- * # Overview  Karix API lets you interact with the Karix platform. It allows you to query your account, set up webhooks, send messages and buy phone numbers.  # API and Clients Versioning  Karix APIs are versioned using the format vX.Y where X is the major version number and Y is minor. All minor version changes are backwards compatible but major releases are not. Please be careful when upgrading.  A new user account is pinned to the latest version at the time of first request. By default every request sent Karix is processed using that version, even if there have been subsequent breaking changes. This is done to prevent existing user applications from breaking. You can change the pinned version for your account using the account dashboard. The default API version can be overridden by specifying the header `api-version`. Note: Specifying this value will not change your pinned version for other calls.  Karix also provides HTTP API clients for all major languages. Release versions of these clients correspond to their API Version supported. Client version vX.Y.Z supports API version vX.Y. HTTP Clients are configured to use `api-version` header for that client version. When using official Karix HTTP Clients only, you dont need to concern yourself with pinned version. To upgrade your API version simply update the client.  # Common Request Structures  All Karix APIs follow a common REST format with the following resources:   - account   - message   - webhook   - number  ## Creating a resource To create a request send a `POST` request with the desired parameters in a JSON object to `/<resource>/` url. A successful response will contain the details of the single resource created with HTTP status code `201 Created`. Note: An exception to this is the `Create Message` API which is a bulk API and returns       a list of message records.  ## Fetching a resource To fetch a resource by its Unique ID send a `GET` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will contain the details of the single resource fetched with HTTP status code `200 OK`  ## Editing a resource To edit certain parameters of a resource send a `PATCH` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource, with a JSON object containing only the parameters which need to be updated. Edit resource APIs generally have no required parameters. A successful response will contain all the details of the single resource after editing.  ## Deleting a resource To delete a resource send a `DELETE` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will return HTTP status code `204 No Content` with no body.  ## Fetching a list of resources To fetch a list of resources send a `GET` request to `/<resource>/` with filters as GET parameters. A successful response will contain a list of filtered paginated objects with HTTP status code `200 OK`.  ### Pagination Pagination for list APIs are controlled using GET parameters:   - `limit`: Number of objects to be returned   - `offset`: Number of objects to skip before collecting the output list.  # Common Response Structures  All Karix APIs follow some common respose structures.  ## Success Responses  ### Single Resource Response  Responses returning a single object will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | data          |               | Details of the object                     |  ### List Resource Response  Responses returning a list of objects will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | |               | previous      | Link to the previous page of the list     | |               | next          | Link to the next page of the list         | |               | count         | Total number of objects over all pages    | |               | limit         | Limit the API was requested with          | |               | offset        | Page Offset the API was requested with    | | objects       |               | List of objects with details              |  ## Error Responses  ### Validation Error Response  Responses for requests which failed due to validation errors will have the follwing keys: | Key           | Child Key     | Description                                | |:------------- |:------------- |:------------------------------------------ | | meta          |               | Meta Details about request and response    | |               | request_uuid  | Unique request identifier                  | | error         |               | Details for the error                      | |               | message       | Error message                              | |               | param         | (Optional) parameter this error relates to |  Validation error responses will return HTTP Status Code `400 Bad Request`  ### Insufficient Balance Response  Some requests will require to consume account credits. In case of insufficient balance the following keys will be returned: | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | error         |               | Details for the error                     | |               | message       | `Insufficient Balance`                    |  Insufficient balance response will return HTTP Status Code `402 Payment Required`
+ * Karix API lets you interact with the Karix platform using an omnichannel messaging API. It also allows you to query your account, set up webhooks and buy phone numbers.
  *
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 2.0
  * Contact: support@karix.io
  * Generated by: https://github.com/swagger-api/swagger-codegen.git
- * Swagger Codegen version: 2.3.1
+ * Swagger Codegen version: unset
  */
 
 /**
@@ -26,17 +26,17 @@
  * Please update the test case below to test the endpoint.
  */
 
-namespace Swagger\Client;
+namespace Karix;
 
-use \Swagger\Client\Configuration;
-use \Swagger\Client\ApiException;
-use \Swagger\Client\ObjectSerializer;
+use \Karix\Configuration;
+use \Karix\ApiException;
+use \Karix\ObjectSerializer;
 
 /**
  * NumberSearchApiTest Class Doc Comment
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -72,12 +72,598 @@ class NumberSearchApiTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test case for numbersearchGet
+     * Test case for searchNumber
      *
      * Query for phone numbers in our inventory..
      *
      */
-    public function testNumbersearchGet()
+    public function testSearchNumber()
     {
+        // Configure HTTP basic authorization: basicAuth
+        $config = Configuration::getDefaultConfiguration()
+                      ->setUsername('YOUR_USERNAME')
+                      ->setPassword('YOUR_PASSWORD');
+
+        $expected_code = 200;
+        // Create a mock response
+        $expected = new \Karix\Model\PhoneNumberListResponse();
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        try {
+            $result = $apiInstance->searchNumber($offset, $limit, $country, $prefix, $contains, $number_type);
+            $this->assertEquals($expected, $result);
+        } catch (Exception $e) {
+            $this->fail("Exception when calling NumberSearchApi->searchNumber: ".$e->getMessage());
+        }
+    }
+
+    /**
+     * Test case for searchNumber with RequestException
+     *
+     * Query for phone numbers in our inventory..
+     *
+     */
+    public function testSearchNumberException()
+    {
+        // Configure HTTP basic authorization: basicAuth
+        $config = Configuration::getDefaultConfiguration()
+                      ->setUsername('YOUR_USERNAME')
+                      ->setPassword('YOUR_PASSWORD');
+
+        $expected_exception = new \GuzzleHttp\Exception\RequestException(
+            "Error Communicating with Server",
+            new \GuzzleHttp\Psr7\Request('GET', 'test')
+        );
+        $mock = new \GuzzleHttp\Handler\MockHandler([$expected_exception]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        try {
+            $result = $apiInstance->searchNumber($offset, $limit, $country, $prefix, $contains, $number_type);
+            $this->fail("No exception when calling NumberSearchApi->searchNumber with mocked exception");
+        } catch (ApiException $e) {
+            $this->assertEquals("[0] ".$expected_exception->getMessage(), $e->getMessage());
+        }
+    }
+
+    /**
+     * Test case for searchNumber with  response
+     *
+     * Query for phone numbers in our inventory..
+     *
+     */
+    public function testSearchNumberHTTPErrorResponses()
+    {
+        // Configure HTTP basic authorization: basicAuth
+        $config = Configuration::getDefaultConfiguration()
+                      ->setUsername('YOUR_USERNAME')
+                      ->setPassword('YOUR_PASSWORD');
+
+        $expected_code = 401;
+        // Create a mock response
+        $expected = null;
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        try {
+            $result = $apiInstance->searchNumber($offset, $limit, $country, $prefix, $contains, $number_type);
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        } catch (ApiException $e) {
+            $this->assertEquals($expected_code, $e->getCode());
+            $this->assertEquals($expected, $e->getResponseObject());
+        }
+        $expected_code = 403;
+        // Create a mock response
+        $expected = new \Karix\Model\UnauthorizedResponse();
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        try {
+            $result = $apiInstance->searchNumber($offset, $limit, $country, $prefix, $contains, $number_type);
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        } catch (ApiException $e) {
+            $this->assertEquals($expected_code, $e->getCode());
+            $this->assertEquals($expected, $e->getResponseObject());
+        }
+        $expected_code = 500;
+        // Create a mock response
+        $expected = new \Karix\Model\ErrorResponse();
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        try {
+            $result = $apiInstance->searchNumber($offset, $limit, $country, $prefix, $contains, $number_type);
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        } catch (ApiException $e) {
+            $this->assertEquals($expected_code, $e->getCode());
+            $this->assertEquals($expected, $e->getResponseObject());
+        }
+    }
+
+    /**
+     * Test case for searchNumber with  response
+     *
+     * Query for phone numbers in our inventory..
+     *
+     */
+    public function testSearchNumberErrorResponses()
+    {
+        // Configure HTTP basic authorization: basicAuth
+        $config = Configuration::getDefaultConfiguration()
+                      ->setUsername('YOUR_USERNAME')
+                      ->setPassword('YOUR_PASSWORD');
+
+        $expected_code = 401;
+        // Create a mock response
+        $expected = null;
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler, 'http_errors' => false]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        try {
+            $result = $apiInstance->searchNumber($offset, $limit, $country, $prefix, $contains, $number_type);
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        } catch (ApiException $e) {
+            $this->assertEquals($expected_code, $e->getCode());
+            $this->assertEquals($expected, $e->getResponseObject());
+        }
+        $expected_code = 403;
+        // Create a mock response
+        $expected = new \Karix\Model\UnauthorizedResponse();
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler, 'http_errors' => false]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        try {
+            $result = $apiInstance->searchNumber($offset, $limit, $country, $prefix, $contains, $number_type);
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        } catch (ApiException $e) {
+            $this->assertEquals($expected_code, $e->getCode());
+            $this->assertEquals($expected, $e->getResponseObject());
+        }
+        $expected_code = 500;
+        // Create a mock response
+        $expected = new \Karix\Model\ErrorResponse();
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler, 'http_errors' => false]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        try {
+            $result = $apiInstance->searchNumber($offset, $limit, $country, $prefix, $contains, $number_type);
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        } catch (ApiException $e) {
+            $this->assertEquals($expected_code, $e->getCode());
+            $this->assertEquals($expected, $e->getResponseObject());
+        }
+    }
+
+    /**
+     * Test case for searchNumber for required parameters
+     *
+     * Query for phone numbers in our inventory..
+     *
+     */
+    public function testSearchNumberRequiredParams()
+    {
+        // Configure HTTP basic authorization: basicAuth
+        $config = Configuration::getDefaultConfiguration()
+                      ->setUsername('YOUR_USERNAME')
+                      ->setPassword('YOUR_PASSWORD');
+
+        $expected_code = 200;
+        // Create a mock response
+        $expected = new \Karix\Model\PhoneNumberListResponse();
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+    }
+
+    /**
+     * Test case for searchNumber Async
+     *
+     * Query for phone numbers in our inventory..
+     *
+     */
+    public function testSearchNumberAsync()
+    {
+        // Configure HTTP basic authorization: basicAuth
+        $config = Configuration::getDefaultConfiguration()
+                      ->setUsername('YOUR_USERNAME')
+                      ->setPassword('YOUR_PASSWORD');
+
+        $expected_code = 200;
+        // Create a mock response
+        $expected = new \Karix\Model\PhoneNumberListResponse();
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        $promise = $apiInstance->searchNumberAsync($offset, $limit, $country, $prefix, $contains, $number_type)->then(function ($result) use( &$expected) {
+            $this->assertEquals($expected, $result);
+        }, function ($exception) {
+            $this->fail("Exception when calling NumberSearchApi->searchNumber: ".$e->getMessage());
+        });
+        $promise->wait();
+    }
+
+    /**
+     * Test case for searchNumber Async with RequestException
+     *
+     * Query for phone numbers in our inventory..
+     *
+     */
+    public function testSearchNumberExceptionAsync()
+    {
+        // Configure HTTP basic authorization: basicAuth
+        $config = Configuration::getDefaultConfiguration()
+                      ->setUsername('YOUR_USERNAME')
+                      ->setPassword('YOUR_PASSWORD');
+
+        $expected_exception = new \GuzzleHttp\Exception\RequestException(
+            "Error Communicating with Server",
+            new \GuzzleHttp\Psr7\Request('GET', 'test')
+        );
+        $mock = new \GuzzleHttp\Handler\MockHandler([$expected_exception]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        $promise = $apiInstance->searchNumberAsync($offset, $limit, $country, $prefix, $contains, $number_type)->then(function ($result) {
+            $this->fail("No exception when calling NumberSearchApi->searchNumber with mocked exception");
+        }, function ($exception) use( &$expected_exception) {
+            $this->assertEquals("[0] ".$expected_exception->getMessage(), $exception->getMessage());
+        });
+        $promise->wait();
+    }
+
+    /**
+     * Test case for searchNumber Async with  response
+     *
+     * Query for phone numbers in our inventory..
+     *
+     */
+    public function testSearchNumberHTTPErrorResponsesAsync()
+    {
+        // Configure HTTP basic authorization: basicAuth
+        $config = Configuration::getDefaultConfiguration()
+                      ->setUsername('YOUR_USERNAME')
+                      ->setPassword('YOUR_PASSWORD');
+
+        $expected_code = 401;
+        // Create a mock response
+        $expected = null;
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        $promise = $apiInstance->searchNumberAsync($offset, $limit, $country, $prefix, $contains, $number_type)->then(function ($result) {
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        }, function ($exception) use(&$expected_code, &$expected) {
+            $this->assertEquals($expected_code, $exception->getCode());
+            $this->assertEquals($expected, $exception->getResponseObject());
+        });
+        $promise->wait();
+        $expected_code = 403;
+        // Create a mock response
+        $expected = new \Karix\Model\UnauthorizedResponse();
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        $promise = $apiInstance->searchNumberAsync($offset, $limit, $country, $prefix, $contains, $number_type)->then(function ($result) {
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        }, function ($exception) use(&$expected_code, &$expected) {
+            $this->assertEquals($expected_code, $exception->getCode());
+            $this->assertEquals($expected, $exception->getResponseObject());
+        });
+        $promise->wait();
+        $expected_code = 500;
+        // Create a mock response
+        $expected = new \Karix\Model\ErrorResponse();
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        $promise = $apiInstance->searchNumberAsync($offset, $limit, $country, $prefix, $contains, $number_type)->then(function ($result) {
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        }, function ($exception) use(&$expected_code, &$expected) {
+            $this->assertEquals($expected_code, $exception->getCode());
+            $this->assertEquals($expected, $exception->getResponseObject());
+        });
+        $promise->wait();
+    }
+
+    /**
+     * Test case for searchNumber Async with  response
+     *
+     * Query for phone numbers in our inventory..
+     *
+     */
+    public function testSearchNumberErrorResponsesAsync()
+    {
+        // Configure HTTP basic authorization: basicAuth
+        $config = Configuration::getDefaultConfiguration()
+                      ->setUsername('YOUR_USERNAME')
+                      ->setPassword('YOUR_PASSWORD');
+
+        $expected_code = 401;
+        // Create a mock response
+        $expected = null;
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler, 'http_errors' => false]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        $promise = $apiInstance->searchNumberAsync($offset, $limit, $country, $prefix, $contains, $number_type)->then(function ($result) {
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        }, function ($exception) use(&$expected_code, &$expected) {
+            $this->assertEquals($expected_code, $exception->getCode());
+            $this->assertEquals($expected, $exception->getResponseObject());
+        });
+        $promise->wait();
+        $expected_code = 403;
+        // Create a mock response
+        $expected = new \Karix\Model\UnauthorizedResponse();
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler, 'http_errors' => false]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        $promise = $apiInstance->searchNumberAsync($offset, $limit, $country, $prefix, $contains, $number_type)->then(function ($result) {
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        }, function ($exception) use(&$expected_code, &$expected) {
+            $this->assertEquals($expected_code, $exception->getCode());
+            $this->assertEquals($expected, $exception->getResponseObject());
+        });
+        $promise->wait();
+        $expected_code = 500;
+        // Create a mock response
+        $expected = new \Karix\Model\ErrorResponse();
+        // Create a mock handler
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($expected_code, [], $expected),
+        ]);
+        $handler = \GuzzleHttp\HandlerStack::create($mock);
+        $client = new \GuzzleHttp\Client(['handler' => $handler, 'http_errors' => false]);
+
+        $apiInstance = new Api\NumberSearchApi(
+            $client,
+            $config
+        );
+        $offset = 0;
+        $limit = 10;
+        $country = "US";
+        $prefix = "prefix_example";
+        $contains = "contains_example";
+        $number_type = array("number_type_example");
+
+        $promise = $apiInstance->searchNumberAsync($offset, $limit, $country, $prefix, $contains, $number_type)->then(function ($result) {
+            $this->fail("No error response when calling NumberSearchApi->searchNumber when mocked to return error");
+        }, function ($exception) use(&$expected_code, &$expected) {
+            $this->assertEquals($expected_code, $exception->getCode());
+            $this->assertEquals($expected, $exception->getResponseObject());
+        });
+        $promise->wait();
     }
 }

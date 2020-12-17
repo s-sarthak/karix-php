@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -13,12 +13,12 @@
 /**
  * karix api
  *
- * # Overview  Karix API lets you interact with the Karix platform. It allows you to query your account, set up webhooks, send messages and buy phone numbers.  # API and Clients Versioning  Karix APIs are versioned using the format vX.Y where X is the major version number and Y is minor. All minor version changes are backwards compatible but major releases are not. Please be careful when upgrading.  A new user account is pinned to the latest version at the time of first request. By default every request sent Karix is processed using that version, even if there have been subsequent breaking changes. This is done to prevent existing user applications from breaking. You can change the pinned version for your account using the account dashboard. The default API version can be overridden by specifying the header `api-version`. Note: Specifying this value will not change your pinned version for other calls.  Karix also provides HTTP API clients for all major languages. Release versions of these clients correspond to their API Version supported. Client version vX.Y.Z supports API version vX.Y. HTTP Clients are configured to use `api-version` header for that client version. When using official Karix HTTP Clients only, you dont need to concern yourself with pinned version. To upgrade your API version simply update the client.  # Common Request Structures  All Karix APIs follow a common REST format with the following resources:   - account   - message   - webhook   - number  ## Creating a resource To create a request send a `POST` request with the desired parameters in a JSON object to `/<resource>/` url. A successful response will contain the details of the single resource created with HTTP status code `201 Created`. Note: An exception to this is the `Create Message` API which is a bulk API and returns       a list of message records.  ## Fetching a resource To fetch a resource by its Unique ID send a `GET` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will contain the details of the single resource fetched with HTTP status code `200 OK`  ## Editing a resource To edit certain parameters of a resource send a `PATCH` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource, with a JSON object containing only the parameters which need to be updated. Edit resource APIs generally have no required parameters. A successful response will contain all the details of the single resource after editing.  ## Deleting a resource To delete a resource send a `DELETE` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will return HTTP status code `204 No Content` with no body.  ## Fetching a list of resources To fetch a list of resources send a `GET` request to `/<resource>/` with filters as GET parameters. A successful response will contain a list of filtered paginated objects with HTTP status code `200 OK`.  ### Pagination Pagination for list APIs are controlled using GET parameters:   - `limit`: Number of objects to be returned   - `offset`: Number of objects to skip before collecting the output list.  # Common Response Structures  All Karix APIs follow some common respose structures.  ## Success Responses  ### Single Resource Response  Responses returning a single object will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | data          |               | Details of the object                     |  ### List Resource Response  Responses returning a list of objects will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | |               | previous      | Link to the previous page of the list     | |               | next          | Link to the next page of the list         | |               | count         | Total number of objects over all pages    | |               | limit         | Limit the API was requested with          | |               | offset        | Page Offset the API was requested with    | | objects       |               | List of objects with details              |  ## Error Responses  ### Validation Error Response  Responses for requests which failed due to validation errors will have the follwing keys: | Key           | Child Key     | Description                                | |:------------- |:------------- |:------------------------------------------ | | meta          |               | Meta Details about request and response    | |               | request_uuid  | Unique request identifier                  | | error         |               | Details for the error                      | |               | message       | Error message                              | |               | param         | (Optional) parameter this error relates to |  Validation error responses will return HTTP Status Code `400 Bad Request`  ### Insufficient Balance Response  Some requests will require to consume account credits. In case of insufficient balance the following keys will be returned: | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | error         |               | Details for the error                     | |               | message       | `Insufficient Balance`                    |  Insufficient balance response will return HTTP Status Code `402 Payment Required`
+ * Karix API lets you interact with the Karix platform using an omnichannel messaging API. It also allows you to query your account, set up webhooks and buy phone numbers.
  *
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 2.0
  * Contact: support@karix.io
  * Generated by: https://github.com/swagger-api/swagger-codegen.git
- * Swagger Codegen version: 2.3.1
+ * Swagger Codegen version: unset
  */
 
 /**
@@ -27,15 +27,14 @@
  * Please update the test case below to test the model.
  */
 
-namespace Swagger\Client;
+namespace Karix;
 
 /**
  * CreateMessageTest Class Doc Comment
  *
- * @category    Class */
-// * @description CreateMessage
-/**
- * @package     Swagger\Client
+ * @category    Class
+ * @description CreateMessage
+ * @package     Karix
  * @author      Swagger Codegen team
  * @link        https://github.com/swagger-api/swagger-codegen
  */
@@ -78,10 +77,39 @@ class CreateMessageTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test attribute "channel"
+     */
+    public function testPropertyChannel()
+    {
+        $create_message = new \Karix\Model\CreateMessage();
+        $channel = "sms";
+        
+        $create_message->setChannel($channel);
+        $this->assertEquals($channel, $create_message->getChannel());
+
+        // Check for enum
+        $create_message->setChannel("sms");
+        $create_message->setChannel("whatsapp");
+        try
+        {
+            $create_message->setChannel("Invalid Edwfere");
+            $this->fail("$create_message->setChannel accepted input outside of enum");
+        }
+        catch(\InvalidArgumentException $e){}
+
+    }
+
+    /**
      * Test attribute "source"
      */
     public function testPropertySource()
     {
+        $create_message = new \Karix\Model\CreateMessage();
+        $source = "+14154009186";
+        
+        $create_message->setSource($source);
+        $this->assertEquals($source, $create_message->getSource());
+
     }
 
     /**
@@ -89,26 +117,153 @@ class CreateMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyDestination()
     {
+        $create_message = new \Karix\Model\CreateMessage();
+        $create_message_destination = [];
+        $subobj = "+15623158625";
+        
+
+        $create_message_destination[] = $subobj;
+        $destination = $create_message_destination;
+        
+        $create_message->setDestination($destination);
+        $this->assertEquals($destination, $create_message->getDestination());
+
     }
 
     /**
-     * Test attribute "text"
+     * Test attribute "content"
      */
-    public function testPropertyText()
+    public function testPropertyContent()
     {
+        $create_message = new \Karix\Model\CreateMessage();
+        
+        
+        $subobj = new \Karix\Model\CreateMessageContent();
+        
+
+        $content = $subobj;
+        
+        $create_message->setContent($content);
+        $this->assertEquals($content, $create_message->getContent());
+
     }
 
     /**
-     * Test attribute "notification_url"
+     * Test attribute "events_url"
      */
-    public function testPropertyNotificationUrl()
+    public function testPropertyEventsUrl()
     {
+        $create_message = new \Karix\Model\CreateMessage();
+        $events_url = "https://events.example.com/message";
+        
+        $create_message->setEventsUrl($events_url);
+        $this->assertEquals($events_url, $create_message->getEventsUrl());
+
     }
 
     /**
-     * Test attribute "notification_method"
-     */
-    public function testPropertyNotificationMethod()
+    * Helper to create a good example of model
+    */
+    public function getGoodExample()
     {
+        $channel = "sms";
+        
+        $source = "+14154009186";
+        
+        $create_message_destination = [];
+        $subobj = "+15623158625";
+        
+
+        $create_message_destination[] = $subobj;
+        $destination = $create_message_destination;
+        
+        
+        
+        $subobj = new \Karix\Model\CreateMessageContent();
+        
+
+        $content = $subobj;
+        
+        $events_url = "https://events.example.com/message";
+        
+        return array(
+            "channel" => $channel,
+            "source" => $source,
+            "destination" => $destination,
+            "content" => $content,
+            "events_url" => $events_url,
+        );
     }
+
+    /**
+    * Test CreateMessage validation
+    */
+    public function testValidation()
+    {
+        $example = $this->getGoodExample();
+        $create_message = new \Karix\Model\CreateMessage($example);
+        $this->assertTrue($create_message->valid());
+    }
+
+    /**
+    *
+    */
+    public function testEnumPropertyChannel()
+    {
+        $example = $this->getGoodExample();
+        $example['channel'] = "Invalid Edwfere";
+        $create_message = new \Karix\Model\CreateMessage($example);
+        $this->assertFalse($create_message->valid());
+
+        $allowedValues = $create_message->getChannelAllowableValues();
+        $err_msg = sprintf(
+            "invalid value for 'channel', must be one of '%s'",
+            implode("', '", $allowedValues)
+        );
+        $invalidProperties = $create_message->listInvalidProperties();
+        $this->assertContains($err_msg, $invalidProperties);
+    }
+
+    /**
+    *
+    */
+    public function testRequiredPropertySource()
+    {
+        $example = $this->getGoodExample();
+        $example['source'] = null;
+        $create_message = new \Karix\Model\CreateMessage($example);
+        $this->assertFalse($create_message->valid());
+
+        $invalidProperties = $create_message->listInvalidProperties();
+        $this->assertContains("'source' can't be null", $invalidProperties);
+    }
+
+    /**
+    *
+    */
+    public function testRequiredPropertyDestination()
+    {
+        $example = $this->getGoodExample();
+        $example['destination'] = null;
+        $create_message = new \Karix\Model\CreateMessage($example);
+        $this->assertFalse($create_message->valid());
+
+        $invalidProperties = $create_message->listInvalidProperties();
+        $this->assertContains("'destination' can't be null", $invalidProperties);
+    }
+
+    /**
+    *
+    */
+    public function testRequiredPropertyContent()
+    {
+        $example = $this->getGoodExample();
+        $example['content'] = null;
+        $create_message = new \Karix\Model\CreateMessage($example);
+        $this->assertFalse($create_message->valid());
+
+        $invalidProperties = $create_message->listInvalidProperties();
+        $this->assertContains("'content' can't be null", $invalidProperties);
+    }
+
 }

@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -13,12 +13,12 @@
 /**
  * karix api
  *
- * # Overview  Karix API lets you interact with the Karix platform. It allows you to query your account, set up webhooks, send messages and buy phone numbers.  # API and Clients Versioning  Karix APIs are versioned using the format vX.Y where X is the major version number and Y is minor. All minor version changes are backwards compatible but major releases are not. Please be careful when upgrading.  A new user account is pinned to the latest version at the time of first request. By default every request sent Karix is processed using that version, even if there have been subsequent breaking changes. This is done to prevent existing user applications from breaking. You can change the pinned version for your account using the account dashboard. The default API version can be overridden by specifying the header `api-version`. Note: Specifying this value will not change your pinned version for other calls.  Karix also provides HTTP API clients for all major languages. Release versions of these clients correspond to their API Version supported. Client version vX.Y.Z supports API version vX.Y. HTTP Clients are configured to use `api-version` header for that client version. When using official Karix HTTP Clients only, you dont need to concern yourself with pinned version. To upgrade your API version simply update the client.  # Common Request Structures  All Karix APIs follow a common REST format with the following resources:   - account   - message   - webhook   - number  ## Creating a resource To create a request send a `POST` request with the desired parameters in a JSON object to `/<resource>/` url. A successful response will contain the details of the single resource created with HTTP status code `201 Created`. Note: An exception to this is the `Create Message` API which is a bulk API and returns       a list of message records.  ## Fetching a resource To fetch a resource by its Unique ID send a `GET` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will contain the details of the single resource fetched with HTTP status code `200 OK`  ## Editing a resource To edit certain parameters of a resource send a `PATCH` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource, with a JSON object containing only the parameters which need to be updated. Edit resource APIs generally have no required parameters. A successful response will contain all the details of the single resource after editing.  ## Deleting a resource To delete a resource send a `DELETE` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will return HTTP status code `204 No Content` with no body.  ## Fetching a list of resources To fetch a list of resources send a `GET` request to `/<resource>/` with filters as GET parameters. A successful response will contain a list of filtered paginated objects with HTTP status code `200 OK`.  ### Pagination Pagination for list APIs are controlled using GET parameters:   - `limit`: Number of objects to be returned   - `offset`: Number of objects to skip before collecting the output list.  # Common Response Structures  All Karix APIs follow some common respose structures.  ## Success Responses  ### Single Resource Response  Responses returning a single object will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | data          |               | Details of the object                     |  ### List Resource Response  Responses returning a list of objects will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | |               | previous      | Link to the previous page of the list     | |               | next          | Link to the next page of the list         | |               | count         | Total number of objects over all pages    | |               | limit         | Limit the API was requested with          | |               | offset        | Page Offset the API was requested with    | | objects       |               | List of objects with details              |  ## Error Responses  ### Validation Error Response  Responses for requests which failed due to validation errors will have the follwing keys: | Key           | Child Key     | Description                                | |:------------- |:------------- |:------------------------------------------ | | meta          |               | Meta Details about request and response    | |               | request_uuid  | Unique request identifier                  | | error         |               | Details for the error                      | |               | message       | Error message                              | |               | param         | (Optional) parameter this error relates to |  Validation error responses will return HTTP Status Code `400 Bad Request`  ### Insufficient Balance Response  Some requests will require to consume account credits. In case of insufficient balance the following keys will be returned: | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | error         |               | Details for the error                     | |               | message       | `Insufficient Balance`                    |  Insufficient balance response will return HTTP Status Code `402 Payment Required`
+ * Karix API lets you interact with the Karix platform using an omnichannel messaging API. It also allows you to query your account, set up webhooks and buy phone numbers.
  *
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 2.0
  * Contact: support@karix.io
  * Generated by: https://github.com/swagger-api/swagger-codegen.git
- * Swagger Codegen version: 2.3.1
+ * Swagger Codegen version: unset
  */
 
 /**
@@ -27,15 +27,14 @@
  * Please update the test case below to test the model.
  */
 
-namespace Swagger\Client;
+namespace Karix;
 
 /**
  * AccountTest Class Doc Comment
  *
- * @category    Class */
-// * @description Account
-/**
- * @package     Swagger\Client
+ * @category    Class
+ * @description Account
+ * @package     Karix
  * @author      Swagger Codegen team
  * @link        https://github.com/swagger-api/swagger-codegen
  */
@@ -82,6 +81,22 @@ class AccountTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyName()
     {
+        $account = new \Karix\Model\Account();
+        $name = "Beth Smith";
+        
+        $account->setName($name);
+        $this->assertEquals($name, $account->getName());
+
+        // Check for validations
+        // Check for maxLength 200
+        $account->setName(str_repeat("a", 200));
+        try
+        {
+            $account->setName(str_repeat("a", 200)."a");
+            $this->fail("$account->setName accepted input greater than 200");
+        }
+        catch(\InvalidArgumentException $e){}
+
     }
 
     /**
@@ -89,6 +104,23 @@ class AccountTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyStatus()
     {
+        $account = new \Karix\Model\Account();
+        $status = "enabled";
+        
+        $account->setStatus($status);
+        $this->assertEquals($status, $account->getStatus());
+
+        // Check for enum
+        $account->setStatus("enabled");
+        $account->setStatus("suspended");
+        $account->setStatus("disabled");
+        try
+        {
+            $account->setStatus("Invalid Edwfere");
+            $this->fail("$account->setStatus accepted input outside of enum");
+        }
+        catch(\InvalidArgumentException $e){}
+
     }
 
     /**
@@ -96,6 +128,12 @@ class AccountTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyUid()
     {
+        $account = new \Karix\Model\Account();
+        $uid = "7fea9708-ea28-42e9-871f-a07fe7cef72f";
+        
+        $account->setUid($uid);
+        $this->assertEquals($uid, $account->getUid());
+
     }
 
     /**
@@ -103,6 +141,12 @@ class AccountTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyToken()
     {
+        $account = new \Karix\Model\Account();
+        $token = "e664221d-4aed-415b-929b-7edf887e4680";
+        
+        $account->setToken($token);
+        $this->assertEquals($token, $account->getToken());
+
     }
 
     /**
@@ -110,6 +154,12 @@ class AccountTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyIsParent()
     {
+        $account = new \Karix\Model\Account();
+        $is_parent = false;
+        
+        $account->setIsParent($is_parent);
+        $this->assertEquals($is_parent, $account->getIsParent());
+
     }
 
     /**
@@ -117,6 +167,13 @@ class AccountTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyCreatedTime()
     {
+        $account = new \Karix\Model\Account();
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-04T09:59:29.660Z');
+        $created_time = $datetime;
+        
+        $account->setCreatedTime($created_time);
+        $this->assertEquals($created_time, $account->getCreatedTime());
+
     }
 
     /**
@@ -124,6 +181,13 @@ class AccountTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyUpdatedTime()
     {
+        $account = new \Karix\Model\Account();
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-05T09:59:29.660Z');
+        $updated_time = $datetime;
+        
+        $account->setUpdatedTime($updated_time);
+        $this->assertEquals($updated_time, $account->getUpdatedTime());
+
     }
 
     /**
@@ -131,6 +195,23 @@ class AccountTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyAccountType()
     {
+        $account = new \Karix\Model\Account();
+        $account_type = "prepaid";
+        
+        $account->setAccountType($account_type);
+        $this->assertEquals($account_type, $account->getAccountType());
+
+        // Check for enum
+        $account->setAccountType("prepaid");
+        $account->setAccountType("postpaid");
+        $account->setAccountType("trial");
+        try
+        {
+            $account->setAccountType("Invalid Edwfere");
+            $this->fail("$account->setAccountType accepted input outside of enum");
+        }
+        catch(\InvalidArgumentException $e){}
+
     }
 
     /**
@@ -138,6 +219,12 @@ class AccountTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyCreditBalance()
     {
+        $account = new \Karix\Model\Account();
+        $credit_balance = "127.33";
+        
+        $account->setCreditBalance($credit_balance);
+        $this->assertEquals($credit_balance, $account->getCreditBalance());
+
     }
 
     /**
@@ -145,5 +232,117 @@ class AccountTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyAutoRecharge()
     {
+        $account = new \Karix\Model\Account();
+        $auto_recharge = false;
+        
+        $account->setAutoRecharge($auto_recharge);
+        $this->assertEquals($auto_recharge, $account->getAutoRecharge());
+
     }
+
+    /**
+    * Helper to create a good example of model
+    */
+    public function getGoodExample()
+    {
+        $name = "Beth Smith";
+        
+        $status = "enabled";
+        
+        $uid = "7fea9708-ea28-42e9-871f-a07fe7cef72f";
+        
+        $token = "e664221d-4aed-415b-929b-7edf887e4680";
+        
+        $is_parent = false;
+        
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-04T09:59:29.660Z');
+        $created_time = $datetime;
+        
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-05T09:59:29.660Z');
+        $updated_time = $datetime;
+        
+        $account_type = "prepaid";
+        
+        $credit_balance = "127.33";
+        
+        $auto_recharge = false;
+        
+        return array(
+            "name" => $name,
+            "status" => $status,
+            "uid" => $uid,
+            "token" => $token,
+            "is_parent" => $is_parent,
+            "created_time" => $created_time,
+            "updated_time" => $updated_time,
+            "account_type" => $account_type,
+            "credit_balance" => $credit_balance,
+            "auto_recharge" => $auto_recharge,
+        );
+    }
+
+    /**
+    * Test Account validation
+    */
+    public function testValidation()
+    {
+        $example = $this->getGoodExample();
+        $account = new \Karix\Model\Account($example);
+        $this->assertTrue($account->valid());
+    }
+
+    /**
+    *
+    */
+    public function testMaxLengthPropertyName()
+    {
+        $example = $this->getGoodExample();
+
+        $example['name'] = str_repeat("a", 200)."a";
+
+        $account = new \Karix\Model\Account($example);
+        $this->assertFalse($account->valid());
+
+        $invalidProperties = $account->listInvalidProperties();
+        $this->assertContains("invalid value for 'name', the character length must be smaller than or equal to 200.", $invalidProperties);
+    }
+
+    /**
+    *
+    */
+    public function testEnumPropertyStatus()
+    {
+        $example = $this->getGoodExample();
+        $example['status'] = "Invalid Edwfere";
+        $account = new \Karix\Model\Account($example);
+        $this->assertFalse($account->valid());
+
+        $allowedValues = $account->getStatusAllowableValues();
+        $err_msg = sprintf(
+            "invalid value for 'status', must be one of '%s'",
+            implode("', '", $allowedValues)
+        );
+        $invalidProperties = $account->listInvalidProperties();
+        $this->assertContains($err_msg, $invalidProperties);
+    }
+
+    /**
+    *
+    */
+    public function testEnumPropertyAccountType()
+    {
+        $example = $this->getGoodExample();
+        $example['account_type'] = "Invalid Edwfere";
+        $account = new \Karix\Model\Account($example);
+        $this->assertFalse($account->valid());
+
+        $allowedValues = $account->getAccountTypeAllowableValues();
+        $err_msg = sprintf(
+            "invalid value for 'account_type', must be one of '%s'",
+            implode("', '", $allowedValues)
+        );
+        $invalidProperties = $account->listInvalidProperties();
+        $this->assertContains($err_msg, $invalidProperties);
+    }
+
 }

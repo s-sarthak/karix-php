@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -13,12 +13,12 @@
 /**
  * karix api
  *
- * # Overview  Karix API lets you interact with the Karix platform. It allows you to query your account, set up webhooks, send messages and buy phone numbers.  # API and Clients Versioning  Karix APIs are versioned using the format vX.Y where X is the major version number and Y is minor. All minor version changes are backwards compatible but major releases are not. Please be careful when upgrading.  A new user account is pinned to the latest version at the time of first request. By default every request sent Karix is processed using that version, even if there have been subsequent breaking changes. This is done to prevent existing user applications from breaking. You can change the pinned version for your account using the account dashboard. The default API version can be overridden by specifying the header `api-version`. Note: Specifying this value will not change your pinned version for other calls.  Karix also provides HTTP API clients for all major languages. Release versions of these clients correspond to their API Version supported. Client version vX.Y.Z supports API version vX.Y. HTTP Clients are configured to use `api-version` header for that client version. When using official Karix HTTP Clients only, you dont need to concern yourself with pinned version. To upgrade your API version simply update the client.  # Common Request Structures  All Karix APIs follow a common REST format with the following resources:   - account   - message   - webhook   - number  ## Creating a resource To create a request send a `POST` request with the desired parameters in a JSON object to `/<resource>/` url. A successful response will contain the details of the single resource created with HTTP status code `201 Created`. Note: An exception to this is the `Create Message` API which is a bulk API and returns       a list of message records.  ## Fetching a resource To fetch a resource by its Unique ID send a `GET` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will contain the details of the single resource fetched with HTTP status code `200 OK`  ## Editing a resource To edit certain parameters of a resource send a `PATCH` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource, with a JSON object containing only the parameters which need to be updated. Edit resource APIs generally have no required parameters. A successful response will contain all the details of the single resource after editing.  ## Deleting a resource To delete a resource send a `DELETE` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will return HTTP status code `204 No Content` with no body.  ## Fetching a list of resources To fetch a list of resources send a `GET` request to `/<resource>/` with filters as GET parameters. A successful response will contain a list of filtered paginated objects with HTTP status code `200 OK`.  ### Pagination Pagination for list APIs are controlled using GET parameters:   - `limit`: Number of objects to be returned   - `offset`: Number of objects to skip before collecting the output list.  # Common Response Structures  All Karix APIs follow some common respose structures.  ## Success Responses  ### Single Resource Response  Responses returning a single object will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | data          |               | Details of the object                     |  ### List Resource Response  Responses returning a list of objects will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | |               | previous      | Link to the previous page of the list     | |               | next          | Link to the next page of the list         | |               | count         | Total number of objects over all pages    | |               | limit         | Limit the API was requested with          | |               | offset        | Page Offset the API was requested with    | | objects       |               | List of objects with details              |  ## Error Responses  ### Validation Error Response  Responses for requests which failed due to validation errors will have the follwing keys: | Key           | Child Key     | Description                                | |:------------- |:------------- |:------------------------------------------ | | meta          |               | Meta Details about request and response    | |               | request_uuid  | Unique request identifier                  | | error         |               | Details for the error                      | |               | message       | Error message                              | |               | param         | (Optional) parameter this error relates to |  Validation error responses will return HTTP Status Code `400 Bad Request`  ### Insufficient Balance Response  Some requests will require to consume account credits. In case of insufficient balance the following keys will be returned: | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | error         |               | Details for the error                     | |               | message       | `Insufficient Balance`                    |  Insufficient balance response will return HTTP Status Code `402 Payment Required`
+ * Karix API lets you interact with the Karix platform using an omnichannel messaging API. It also allows you to query your account, set up webhooks and buy phone numbers.
  *
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 2.0
  * Contact: support@karix.io
  * Generated by: https://github.com/swagger-api/swagger-codegen.git
- * Swagger Codegen version: 2.3.1
+ * Swagger Codegen version: unset
  */
 
 /**
@@ -27,15 +27,14 @@
  * Please update the test case below to test the model.
  */
 
-namespace Swagger\Client;
+namespace Karix;
 
 /**
  * MessageTest Class Doc Comment
  *
- * @category    Class */
-// * @description Message
-/**
- * @package     Swagger\Client
+ * @category    Class
+ * @description Message
+ * @package     Karix
  * @author      Swagger Codegen team
  * @link        https://github.com/swagger-api/swagger-codegen
  */
@@ -82,6 +81,12 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyUid()
     {
+        $message = new \Karix\Model\Message();
+        $uid = "5a507caf-0769-4914-a7f7-54f5a064b52a";
+        
+        $message->setUid($uid);
+        $this->assertEquals($uid, $message->getUid());
+
     }
 
     /**
@@ -89,83 +94,12 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyAccountUid()
     {
-    }
+        $message = new \Karix\Model\Message();
+        $account_uid = "5a507caf-0769-4914-a7f7-54f5a064b52a";
+        
+        $message->setAccountUid($account_uid);
+        $this->assertEquals($account_uid, $message->getAccountUid());
 
-    /**
-     * Test attribute "source"
-     */
-    public function testPropertySource()
-    {
-    }
-
-    /**
-     * Test attribute "destination"
-     */
-    public function testPropertyDestination()
-    {
-    }
-
-    /**
-     * Test attribute "status"
-     */
-    public function testPropertyStatus()
-    {
-    }
-
-    /**
-     * Test attribute "text"
-     */
-    public function testPropertyText()
-    {
-    }
-
-    /**
-     * Test attribute "queued_time"
-     */
-    public function testPropertyQueuedTime()
-    {
-    }
-
-    /**
-     * Test attribute "sent_time"
-     */
-    public function testPropertySentTime()
-    {
-    }
-
-    /**
-     * Test attribute "updated_time"
-     */
-    public function testPropertyUpdatedTime()
-    {
-    }
-
-    /**
-     * Test attribute "direction"
-     */
-    public function testPropertyDirection()
-    {
-    }
-
-    /**
-     * Test attribute "error"
-     */
-    public function testPropertyError()
-    {
-    }
-
-    /**
-     * Test attribute "rate"
-     */
-    public function testPropertyRate()
-    {
-    }
-
-    /**
-     * Test attribute "refund"
-     */
-    public function testPropertyRefund()
-    {
     }
 
     /**
@@ -173,33 +107,410 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyTotalCost()
     {
+        $message = new \Karix\Model\Message();
+        $total_cost = "0.0032";
+        
+        $message->setTotalCost($total_cost);
+        $this->assertEquals($total_cost, $message->getTotalCost());
+
     }
 
     /**
-     * Test attribute "parts"
+     * Test attribute "refund"
      */
-    public function testPropertyParts()
+    public function testPropertyRefund()
     {
+        $message = new \Karix\Model\Message();
+        $refund = "example value";
+        
+        $message->setRefund($refund);
+        $this->assertEquals($refund, $message->getRefund());
+
     }
 
     /**
-     * Test attribute "message_type"
+     * Test attribute "source"
      */
-    public function testPropertyMessageType()
+    public function testPropertySource()
     {
+        $message = new \Karix\Model\Message();
+        $source = "14154009186";
+        
+        $message->setSource($source);
+        $this->assertEquals($source, $message->getSource());
+
     }
 
     /**
-     * Test attribute "mobile_country_code"
+     * Test attribute "destination"
      */
-    public function testPropertyMobileCountryCode()
+    public function testPropertyDestination()
     {
+        $message = new \Karix\Model\Message();
+        $destination = "+15623158625";
+        
+        $message->setDestination($destination);
+        $this->assertEquals($destination, $message->getDestination());
+
     }
 
     /**
-     * Test attribute "mobile_network_code"
+     * Test attribute "country"
      */
-    public function testPropertyMobileNetworkCode()
+    public function testPropertyCountry()
     {
+        $message = new \Karix\Model\Message();
+        $country = "US";
+        
+        $message->setCountry($country);
+        $this->assertEquals($country, $message->getCountry());
+
     }
+
+    /**
+     * Test attribute "content_type"
+     */
+    public function testPropertyContentType()
+    {
+        $message = new \Karix\Model\Message();
+        $content_type = "text";
+        
+        $message->setContentType($content_type);
+        $this->assertEquals($content_type, $message->getContentType());
+
+        // Check for enum
+        $message->setContentType("text");
+        $message->setContentType("location");
+        try
+        {
+            $message->setContentType("Invalid Edwfere");
+            $this->fail("$message->setContentType accepted input outside of enum");
+        }
+        catch(\InvalidArgumentException $e){}
+
+    }
+
+    /**
+     * Test attribute "content"
+     */
+    public function testPropertyContent()
+    {
+        $message = new \Karix\Model\Message();
+        
+        
+        $subobj = new \Karix\Model\MessageContent();
+        
+
+        $content = $subobj;
+        
+        $message->setContent($content);
+        $this->assertEquals($content, $message->getContent());
+
+    }
+
+    /**
+     * Test attribute "created_time"
+     */
+    public function testPropertyCreatedTime()
+    {
+        $message = new \Karix\Model\Message();
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-04T09:59:29.660Z');
+        $created_time = $datetime;
+        
+        $message->setCreatedTime($created_time);
+        $this->assertEquals($created_time, $message->getCreatedTime());
+
+    }
+
+    /**
+     * Test attribute "sent_time"
+     */
+    public function testPropertySentTime()
+    {
+        $message = new \Karix\Model\Message();
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-04T09:59:29.660Z');
+        $sent_time = $datetime;
+        
+        $message->setSentTime($sent_time);
+        $this->assertEquals($sent_time, $message->getSentTime());
+
+    }
+
+    /**
+     * Test attribute "delivered_time"
+     */
+    public function testPropertyDeliveredTime()
+    {
+        $message = new \Karix\Model\Message();
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-04T09:59:29.660Z');
+        $delivered_time = $datetime;
+        
+        $message->setDeliveredTime($delivered_time);
+        $this->assertEquals($delivered_time, $message->getDeliveredTime());
+
+    }
+
+    /**
+     * Test attribute "updated_time"
+     */
+    public function testPropertyUpdatedTime()
+    {
+        $message = new \Karix\Model\Message();
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-04T09:59:29.660Z');
+        $updated_time = $datetime;
+        
+        $message->setUpdatedTime($updated_time);
+        $this->assertEquals($updated_time, $message->getUpdatedTime());
+
+    }
+
+    /**
+     * Test attribute "status"
+     */
+    public function testPropertyStatus()
+    {
+        $message = new \Karix\Model\Message();
+        $status = "delivered";
+        
+        $message->setStatus($status);
+        $this->assertEquals($status, $message->getStatus());
+
+        // Check for enum
+        $message->setStatus("queued");
+        $message->setStatus("sent");
+        $message->setStatus("failed");
+        $message->setStatus("delivered");
+        $message->setStatus("read");
+        $message->setStatus("undelivered");
+        $message->setStatus("rejected");
+        try
+        {
+            $message->setStatus("Invalid Edwfere");
+            $this->fail("$message->setStatus accepted input outside of enum");
+        }
+        catch(\InvalidArgumentException $e){}
+
+    }
+
+    /**
+     * Test attribute "direction"
+     */
+    public function testPropertyDirection()
+    {
+        $message = new \Karix\Model\Message();
+        $direction = "outbound";
+        
+        $message->setDirection($direction);
+        $this->assertEquals($direction, $message->getDirection());
+
+        // Check for enum
+        $message->setDirection("inbound");
+        $message->setDirection("outbound");
+        try
+        {
+            $message->setDirection("Invalid Edwfere");
+            $this->fail("$message->setDirection accepted input outside of enum");
+        }
+        catch(\InvalidArgumentException $e){}
+
+    }
+
+    /**
+     * Test attribute "error"
+     */
+    public function testPropertyError()
+    {
+        $message = new \Karix\Model\Message();
+        
+        
+        $subobj = new \Karix\Model\MessageError();
+        
+
+        $error = $subobj;
+        
+        $message->setError($error);
+        $this->assertEquals($error, $message->getError());
+
+    }
+
+    /**
+     * Test attribute "redact"
+     */
+    public function testPropertyRedact()
+    {
+        $message = new \Karix\Model\Message();
+        $redact = true;
+        
+        $message->setRedact($redact);
+        $this->assertEquals($redact, $message->getRedact());
+
+    }
+
+    /**
+     * Test attribute "channel_details"
+     */
+    public function testPropertyChannelDetails()
+    {
+        $message = new \Karix\Model\Message();
+        
+        
+        $subobj = new \Karix\Model\MessageChannelDetails();
+        
+
+        $channel_details = $subobj;
+        
+        $message->setChannelDetails($channel_details);
+        $this->assertEquals($channel_details, $message->getChannelDetails());
+
+    }
+
+    /**
+    * Helper to create a good example of model
+    */
+    public function getGoodExample()
+    {
+        $uid = "5a507caf-0769-4914-a7f7-54f5a064b52a";
+        
+        $account_uid = "5a507caf-0769-4914-a7f7-54f5a064b52a";
+        
+        $total_cost = "0.0032";
+        
+        $refund = "example value";
+        
+        $source = "14154009186";
+        
+        $destination = "+15623158625";
+        
+        $country = "US";
+        
+        $content_type = "text";
+        
+        
+        
+        $subobj = new \Karix\Model\MessageContent();
+        
+
+        $content = $subobj;
+        
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-04T09:59:29.660Z');
+        $created_time = $datetime;
+        
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-04T09:59:29.660Z');
+        $sent_time = $datetime;
+        
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-04T09:59:29.660Z');
+        $delivered_time = $datetime;
+        
+        $datetime = \DateTime::createFromFormat(\DateTime::ISO8601, '2017-08-04T09:59:29.660Z');
+        $updated_time = $datetime;
+        
+        $status = "delivered";
+        
+        $direction = "outbound";
+        
+        
+        
+        $subobj = new \Karix\Model\MessageError();
+        
+
+        $error = $subobj;
+        
+        $redact = true;
+        
+        
+        
+        $subobj = new \Karix\Model\MessageChannelDetails();
+        
+
+        $channel_details = $subobj;
+        
+        return array(
+            "uid" => $uid,
+            "account_uid" => $account_uid,
+            "total_cost" => $total_cost,
+            "refund" => $refund,
+            "source" => $source,
+            "destination" => $destination,
+            "country" => $country,
+            "content_type" => $content_type,
+            "content" => $content,
+            "created_time" => $created_time,
+            "sent_time" => $sent_time,
+            "delivered_time" => $delivered_time,
+            "updated_time" => $updated_time,
+            "status" => $status,
+            "direction" => $direction,
+            "error" => $error,
+            "redact" => $redact,
+            "channel_details" => $channel_details,
+        );
+    }
+
+    /**
+    * Test Message validation
+    */
+    public function testValidation()
+    {
+        $example = $this->getGoodExample();
+        $message = new \Karix\Model\Message($example);
+        $this->assertTrue($message->valid());
+    }
+
+    /**
+    *
+    */
+    public function testEnumPropertyContentType()
+    {
+        $example = $this->getGoodExample();
+        $example['content_type'] = "Invalid Edwfere";
+        $message = new \Karix\Model\Message($example);
+        $this->assertFalse($message->valid());
+
+        $allowedValues = $message->getContentTypeAllowableValues();
+        $err_msg = sprintf(
+            "invalid value for 'content_type', must be one of '%s'",
+            implode("', '", $allowedValues)
+        );
+        $invalidProperties = $message->listInvalidProperties();
+        $this->assertContains($err_msg, $invalidProperties);
+    }
+
+    /**
+    *
+    */
+    public function testEnumPropertyStatus()
+    {
+        $example = $this->getGoodExample();
+        $example['status'] = "Invalid Edwfere";
+        $message = new \Karix\Model\Message($example);
+        $this->assertFalse($message->valid());
+
+        $allowedValues = $message->getStatusAllowableValues();
+        $err_msg = sprintf(
+            "invalid value for 'status', must be one of '%s'",
+            implode("', '", $allowedValues)
+        );
+        $invalidProperties = $message->listInvalidProperties();
+        $this->assertContains($err_msg, $invalidProperties);
+    }
+
+    /**
+    *
+    */
+    public function testEnumPropertyDirection()
+    {
+        $example = $this->getGoodExample();
+        $example['direction'] = "Invalid Edwfere";
+        $message = new \Karix\Model\Message($example);
+        $this->assertFalse($message->valid());
+
+        $allowedValues = $message->getDirectionAllowableValues();
+        $err_msg = sprintf(
+            "invalid value for 'direction', must be one of '%s'",
+            implode("', '", $allowedValues)
+        );
+        $invalidProperties = $message->listInvalidProperties();
+        $this->assertContains($err_msg, $invalidProperties);
+    }
+
 }

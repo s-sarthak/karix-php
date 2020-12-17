@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -13,12 +13,12 @@
 /**
  * karix api
  *
- * # Overview  Karix API lets you interact with the Karix platform. It allows you to query your account, set up webhooks, send messages and buy phone numbers.  # API and Clients Versioning  Karix APIs are versioned using the format vX.Y where X is the major version number and Y is minor. All minor version changes are backwards compatible but major releases are not. Please be careful when upgrading.  A new user account is pinned to the latest version at the time of first request. By default every request sent Karix is processed using that version, even if there have been subsequent breaking changes. This is done to prevent existing user applications from breaking. You can change the pinned version for your account using the account dashboard. The default API version can be overridden by specifying the header `api-version`. Note: Specifying this value will not change your pinned version for other calls.  Karix also provides HTTP API clients for all major languages. Release versions of these clients correspond to their API Version supported. Client version vX.Y.Z supports API version vX.Y. HTTP Clients are configured to use `api-version` header for that client version. When using official Karix HTTP Clients only, you dont need to concern yourself with pinned version. To upgrade your API version simply update the client.  # Common Request Structures  All Karix APIs follow a common REST format with the following resources:   - account   - message   - webhook   - number  ## Creating a resource To create a request send a `POST` request with the desired parameters in a JSON object to `/<resource>/` url. A successful response will contain the details of the single resource created with HTTP status code `201 Created`. Note: An exception to this is the `Create Message` API which is a bulk API and returns       a list of message records.  ## Fetching a resource To fetch a resource by its Unique ID send a `GET` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will contain the details of the single resource fetched with HTTP status code `200 OK`  ## Editing a resource To edit certain parameters of a resource send a `PATCH` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource, with a JSON object containing only the parameters which need to be updated. Edit resource APIs generally have no required parameters. A successful response will contain all the details of the single resource after editing.  ## Deleting a resource To delete a resource send a `DELETE` request to `/<resource>/<uid>/` where `uid` is the Alphanumeric Unique ID of the resource. A successful response will return HTTP status code `204 No Content` with no body.  ## Fetching a list of resources To fetch a list of resources send a `GET` request to `/<resource>/` with filters as GET parameters. A successful response will contain a list of filtered paginated objects with HTTP status code `200 OK`.  ### Pagination Pagination for list APIs are controlled using GET parameters:   - `limit`: Number of objects to be returned   - `offset`: Number of objects to skip before collecting the output list.  # Common Response Structures  All Karix APIs follow some common respose structures.  ## Success Responses  ### Single Resource Response  Responses returning a single object will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | data          |               | Details of the object                     |  ### List Resource Response  Responses returning a list of objects will have the following keys | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | |               | previous      | Link to the previous page of the list     | |               | next          | Link to the next page of the list         | |               | count         | Total number of objects over all pages    | |               | limit         | Limit the API was requested with          | |               | offset        | Page Offset the API was requested with    | | objects       |               | List of objects with details              |  ## Error Responses  ### Validation Error Response  Responses for requests which failed due to validation errors will have the follwing keys: | Key           | Child Key     | Description                                | |:------------- |:------------- |:------------------------------------------ | | meta          |               | Meta Details about request and response    | |               | request_uuid  | Unique request identifier                  | | error         |               | Details for the error                      | |               | message       | Error message                              | |               | param         | (Optional) parameter this error relates to |  Validation error responses will return HTTP Status Code `400 Bad Request`  ### Insufficient Balance Response  Some requests will require to consume account credits. In case of insufficient balance the following keys will be returned: | Key           | Child Key     | Description                               | |:------------- |:------------- |:----------------------------------------- | | meta          |               | Meta Details about request and response   | |               | request_uuid  | Unique request identifier                 | | error         |               | Details for the error                     | |               | message       | `Insufficient Balance`                    |  Insufficient balance response will return HTTP Status Code `402 Payment Required`
+ * Karix API lets you interact with the Karix platform using an omnichannel messaging API. It also allows you to query your account, set up webhooks and buy phone numbers.
  *
- * OpenAPI spec version: 1.0
+ * OpenAPI spec version: 2.0
  * Contact: support@karix.io
  * Generated by: https://github.com/swagger-api/swagger-codegen.git
- * Swagger Codegen version: 2.3.1
+ * Swagger Codegen version: unset
  */
 
 /**
@@ -27,16 +27,16 @@
  * Do not edit the class manually.
  */
 
-namespace Swagger\Client\Model;
+namespace Karix\Model;
 
 use \ArrayAccess;
-use \Swagger\Client\ObjectSerializer;
+use \Karix\ObjectSerializer;
 
 /**
  * CreateMessage Class Doc Comment
  *
  * @category Class
- * @package  Swagger\Client
+ * @package  Karix
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
@@ -57,11 +57,11 @@ class CreateMessage implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $swaggerTypes = [
+        'channel' => 'string',
         'source' => 'string',
         'destination' => 'string[]',
-        'text' => 'string',
-        'notification_url' => 'string',
-        'notification_method' => 'string'
+        'content' => '\Karix\Model\CreateMessageContent',
+        'events_url' => 'string'
     ];
 
     /**
@@ -70,17 +70,19 @@ class CreateMessage implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $swaggerFormats = [
+        'channel' => null,
         'source' => null,
         'destination' => null,
-        'text' => null,
-        'notification_url' => null,
-        'notification_method' => null
+        'content' => null,
+        'events_url' => null
     ];
 
     /**
      * Array of property to type mappings. Used for (de)serialization
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function swaggerTypes()
     {
@@ -91,6 +93,8 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * Array of property to format mappings. Used for (de)serialization
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function swaggerFormats()
     {
@@ -102,13 +106,15 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * and the value is the original name
      *
      * @var string[]
+     *
+     * @codeCoverageIgnore
      */
     protected static $attributeMap = [
+        'channel' => 'channel',
         'source' => 'source',
         'destination' => 'destination',
-        'text' => 'text',
-        'notification_url' => 'notification_url',
-        'notification_method' => 'notification_method'
+        'content' => 'content',
+        'events_url' => 'events_url'
     ];
 
     /**
@@ -117,11 +123,11 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
+        'channel' => 'setChannel',
         'source' => 'setSource',
         'destination' => 'setDestination',
-        'text' => 'setText',
-        'notification_url' => 'setNotificationUrl',
-        'notification_method' => 'setNotificationMethod'
+        'content' => 'setContent',
+        'events_url' => 'setEventsUrl'
     ];
 
     /**
@@ -130,11 +136,11 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
+        'channel' => 'getChannel',
         'source' => 'getSource',
         'destination' => 'getDestination',
-        'text' => 'getText',
-        'notification_url' => 'getNotificationUrl',
-        'notification_method' => 'getNotificationMethod'
+        'content' => 'getContent',
+        'events_url' => 'getEventsUrl'
     ];
 
     /**
@@ -142,6 +148,8 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * and the value is the original name
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function attributeMap()
     {
@@ -152,6 +160,8 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * Array of attributes to setter functions (for deserialization of responses)
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function setters()
     {
@@ -162,6 +172,8 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * Array of attributes to getter functions (for serialization of requests)
      *
      * @return array
+     *
+     * @codeCoverageIgnore
      */
     public static function getters()
     {
@@ -172,14 +184,16 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * The original name of the model.
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function getModelName()
     {
         return self::$swaggerModelName;
     }
 
-    const NOTIFICATION_METHOD_GET = 'GET';
-    const NOTIFICATION_METHOD_POST = 'POST';
+    const CHANNEL_SMS = 'sms';
+    const CHANNEL_WHATSAPP = 'whatsapp';
     
 
     
@@ -188,11 +202,11 @@ class CreateMessage implements ModelInterface, ArrayAccess
      *
      * @return string[]
      */
-    public function getNotificationMethodAllowableValues()
+    public function getChannelAllowableValues()
     {
         return [
-            self::NOTIFICATION_METHOD_GET,
-            self::NOTIFICATION_METHOD_POST,
+            self::CHANNEL_SMS,
+            self::CHANNEL_WHATSAPP,
         ];
     }
     
@@ -212,11 +226,11 @@ class CreateMessage implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
+        $this->container['channel'] = isset($data['channel']) ? $data['channel'] : 'sms';
         $this->container['source'] = isset($data['source']) ? $data['source'] : null;
         $this->container['destination'] = isset($data['destination']) ? $data['destination'] : null;
-        $this->container['text'] = isset($data['text']) ? $data['text'] : null;
-        $this->container['notification_url'] = isset($data['notification_url']) ? $data['notification_url'] : null;
-        $this->container['notification_method'] = isset($data['notification_method']) ? $data['notification_method'] : null;
+        $this->container['content'] = isset($data['content']) ? $data['content'] : null;
+        $this->container['events_url'] = isset($data['events_url']) ? $data['events_url'] : null;
     }
 
     /**
@@ -228,27 +242,23 @@ class CreateMessage implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
+        $allowedValues = $this->getChannelAllowableValues();
+        if (!is_null($this->container['channel']) && !in_array($this->container['channel'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value for 'channel', must be one of '%s'",
+                implode("', '", $allowedValues)
+            );
+        }
+
         if ($this->container['source'] === null) {
             $invalidProperties[] = "'source' can't be null";
         }
         if ($this->container['destination'] === null) {
             $invalidProperties[] = "'destination' can't be null";
         }
-        if ($this->container['text'] === null) {
-            $invalidProperties[] = "'text' can't be null";
+        if ($this->container['content'] === null) {
+            $invalidProperties[] = "'content' can't be null";
         }
-        if ((strlen($this->container['text']) < 1)) {
-            $invalidProperties[] = "invalid value for 'text', the character length must be bigger than or equal to 1.";
-        }
-
-        $allowedValues = $this->getNotificationMethodAllowableValues();
-        if (!in_array($this->container['notification_method'], $allowedValues)) {
-            $invalidProperties[] = sprintf(
-                "invalid value for 'notification_method', must be one of '%s'",
-                implode("', '", $allowedValues)
-            );
-        }
-
         return $invalidProperties;
     }
 
@@ -260,26 +270,42 @@ class CreateMessage implements ModelInterface, ArrayAccess
      */
     public function valid()
     {
-
-        if ($this->container['source'] === null) {
-            return false;
-        }
-        if ($this->container['destination'] === null) {
-            return false;
-        }
-        if ($this->container['text'] === null) {
-            return false;
-        }
-        if (strlen($this->container['text']) < 1) {
-            return false;
-        }
-        $allowedValues = $this->getNotificationMethodAllowableValues();
-        if (!in_array($this->container['notification_method'], $allowedValues)) {
-            return false;
-        }
-        return true;
+        return count($this->listInvalidProperties()) === 0;
     }
 
+
+    /**
+     * Gets channel
+     *
+     * @return string
+     */
+    public function getChannel()
+    {
+        return $this->container['channel'];
+    }
+
+    /**
+     * Sets channel
+     *
+     * @param string $channel Channel to use to send message over Supported Channels: sms, whatsapp
+     *
+     * @return $this
+     */
+    public function setChannel($channel)
+    {
+        $allowedValues = $this->getChannelAllowableValues();
+        if (!is_null($channel) && !in_array($channel, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value for 'channel', must be one of '%s'",
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['channel'] = $channel;
+
+        return $this;
+    }
 
     /**
      * Gets source
@@ -294,7 +320,7 @@ class CreateMessage implements ModelInterface, ArrayAccess
     /**
      * Sets source
      *
-     * @param string $source Sender ID for the message which will be displayed to the receiver. It should specification E.164 with international calling codes but without the `+` in front.   - When sending a message to US/Canada, the Sender ID must be a number     which belongs to your Karix Subaccount (or main account).
+     * @param string $source Sender ID for the message which will be displayed to the receiver. It should specification E.164 with international calling codes.   - When sending a message to US/Canada, `source` must be a number     which belongs to your Karix Subaccount (or main account).   - When sending a message over `whatsapp` channel, `source` must be the     whatsapp sandbox number from your dashboard or a Whatsapp enabled number     added to your account.
      *
      * @return $this
      */
@@ -318,7 +344,7 @@ class CreateMessage implements ModelInterface, ArrayAccess
     /**
      * Sets destination
      *
-     * @param string[] $destination The destination numbers for the message.
+     * @param string[] $destination The destination numbers for the message.   - When sending a message over `whatsapp` channel, the `destination` array     must contain only one phone number.
      *
      * @return $this
      */
@@ -330,87 +356,49 @@ class CreateMessage implements ModelInterface, ArrayAccess
     }
 
     /**
-     * Gets text
+     * Gets content
      *
-     * @return string
+     * @return \Karix\Model\CreateMessageContent
      */
-    public function getText()
+    public function getContent()
     {
-        return $this->container['text'];
+        return $this->container['content'];
     }
 
     /**
-     * Sets text
+     * Sets content
      *
-     * @param string $text text
+     * @param \Karix\Model\CreateMessageContent $content content
      *
      * @return $this
      */
-    public function setText($text)
+    public function setContent($content)
     {
-
-        if ((strlen($text) < 1)) {
-            throw new \InvalidArgumentException('invalid length for $text when calling CreateMessage., must be bigger than or equal to 1.');
-        }
-
-        $this->container['text'] = $text;
+        $this->container['content'] = $content;
 
         return $this;
     }
 
     /**
-     * Gets notification_url
+     * Gets events_url
      *
      * @return string
      */
-    public function getNotificationUrl()
+    public function getEventsUrl()
     {
-        return $this->container['notification_url'];
+        return $this->container['events_url'];
     }
 
     /**
-     * Sets notification_url
+     * Sets events_url
      *
-     * @param string $notification_url URL on which message status change notifications will be sent
+     * @param string $events_url Status change events for the `queued` messages will be sent to `events_url`.   - Please read more about [Karix Events](#section/Events-and-Webhooks) structure.   - A message sent over `whatsapp` channel might generate a `read` event directly     and skip the `delivered` event. A message for which you receive a `read` event     should be considered `delivered` as well.
      *
      * @return $this
      */
-    public function setNotificationUrl($notification_url)
+    public function setEventsUrl($events_url)
     {
-        $this->container['notification_url'] = $notification_url;
-
-        return $this;
-    }
-
-    /**
-     * Gets notification_method
-     *
-     * @return string
-     */
-    public function getNotificationMethod()
-    {
-        return $this->container['notification_method'];
-    }
-
-    /**
-     * Sets notification_method
-     *
-     * @param string $notification_method The HTTP method which be be used to send the notification. Defaults to POST if `notification_url` is specified.
-     *
-     * @return $this
-     */
-    public function setNotificationMethod($notification_method)
-    {
-        $allowedValues = $this->getNotificationMethodAllowableValues();
-        if (!is_null($notification_method) && !in_array($notification_method, $allowedValues)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value for 'notification_method', must be one of '%s'",
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-        $this->container['notification_method'] = $notification_method;
+        $this->container['events_url'] = $events_url;
 
         return $this;
     }
@@ -420,6 +408,8 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * @param integer $offset Offset
      *
      * @return boolean
+     *
+     * @codeCoverageIgnore
      */
     public function offsetExists($offset)
     {
@@ -432,6 +422,8 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * @param integer $offset Offset
      *
      * @return mixed
+     *
+     * @codeCoverageIgnore
      */
     public function offsetGet($offset)
     {
@@ -445,6 +437,8 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * @param mixed   $value  Value to be set
      *
      * @return void
+     *
+     * @codeCoverageIgnore
      */
     public function offsetSet($offset, $value)
     {
@@ -461,6 +455,8 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * @param integer $offset Offset
      *
      * @return void
+     *
+     * @codeCoverageIgnore
      */
     public function offsetUnset($offset)
     {
@@ -471,6 +467,8 @@ class CreateMessage implements ModelInterface, ArrayAccess
      * Gets the string presentation of the object
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function __toString()
     {

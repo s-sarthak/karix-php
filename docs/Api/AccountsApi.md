@@ -1,4 +1,4 @@
-# Swagger\Client\AccountsApi
+# Karix\AccountsApi
 
 All URIs are relative to *https://api.karix.io*
 
@@ -11,7 +11,7 @@ Method | HTTP request | Description
 
 
 # **createSubaccount**
-> \Swagger\Client\Model\InlineResponse201 createSubaccount($api_version, $subaccount)
+> \Karix\Model\AccountResponse createSubaccount($subaccount)
 
 Create a new subaccount
 
@@ -23,22 +23,21 @@ Create a new subaccount under your account
 require_once(__DIR__ . '/vendor/autoload.php');
 
 // Configure HTTP basic authorization: basicAuth
-$config = Swagger\Client\Configuration::getDefaultConfiguration()
+$config = Karix\Configuration::getDefaultConfiguration()
               ->setUsername('YOUR_USERNAME')
               ->setPassword('YOUR_PASSWORD');
 
 
-$apiInstance = new Swagger\Client\Api\AccountsApi(
+$apiInstance = new Karix\Api\AccountsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
     $config
 );
-$api_version = "1.0"; // string | API Version. If not specified your pinned verison is used.
-$subaccount = new \Swagger\Client\Model\CreateAccount(); // \Swagger\Client\Model\CreateAccount | Subaccount object
+$subaccount = new \Karix\Model\CreateAccount(); // \Karix\Model\CreateAccount | Subaccount object
 
 try {
-    $result = $apiInstance->createSubaccount($api_version, $subaccount);
+    $result = $apiInstance->createSubaccount($subaccount);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling AccountsApi->createSubaccount: ', $e->getMessage(), PHP_EOL;
@@ -50,12 +49,11 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **api_version** | **string**| API Version. If not specified your pinned verison is used. | [optional] [default to 1.0]
- **subaccount** | [**\Swagger\Client\Model\CreateAccount**](../Model/CreateAccount.md)| Subaccount object | [optional]
+ **subaccount** | [**\Karix\Model\CreateAccount**](../Model/CreateAccount.md)| Subaccount object |
 
 ### Return type
 
-[**\Swagger\Client\Model\InlineResponse201**](../Model/InlineResponse201.md)
+[**\Karix\Model\AccountResponse**](../Model/AccountResponse.md)
 
 ### Authorization
 
@@ -69,7 +67,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
 # **getSubaccount**
-> \Swagger\Client\Model\InlineResponse200 getSubaccount($api_version, $offset, $limit)
+> \Karix\Model\AccountListResponse getSubaccount($offset, $limit)
 
 Get a list of accounts
 
@@ -81,23 +79,22 @@ Get a list of details of all subaccounts, including the main account. Accounts a
 require_once(__DIR__ . '/vendor/autoload.php');
 
 // Configure HTTP basic authorization: basicAuth
-$config = Swagger\Client\Configuration::getDefaultConfiguration()
+$config = Karix\Configuration::getDefaultConfiguration()
               ->setUsername('YOUR_USERNAME')
               ->setPassword('YOUR_PASSWORD');
 
 
-$apiInstance = new Swagger\Client\Api\AccountsApi(
+$apiInstance = new Karix\Api\AccountsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
     $config
 );
-$api_version = "1.0"; // string | API Version. If not specified your pinned verison is used.
 $offset = 0; // int | The number of items to skip before starting to collect the result set.
 $limit = 10; // int | The numbers of items to return.
 
 try {
-    $result = $apiInstance->getSubaccount($api_version, $offset, $limit);
+    $result = $apiInstance->getSubaccount($offset, $limit);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling AccountsApi->getSubaccount: ', $e->getMessage(), PHP_EOL;
@@ -109,13 +106,12 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **api_version** | **string**| API Version. If not specified your pinned verison is used. | [optional] [default to 1.0]
  **offset** | **int**| The number of items to skip before starting to collect the result set. | [optional] [default to 0]
  **limit** | **int**| The numbers of items to return. | [optional] [default to 10]
 
 ### Return type
 
-[**\Swagger\Client\Model\InlineResponse200**](../Model/InlineResponse200.md)
+[**\Karix\Model\AccountListResponse**](../Model/AccountListResponse.md)
 
 ### Authorization
 
@@ -129,7 +125,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
 # **getSubaccountById**
-> \Swagger\Client\Model\InlineResponse201 getSubaccountById($uid, $api_version)
+> \Karix\Model\AccountResponse getSubaccountById($uid)
 
 Get details of an account
 
@@ -141,22 +137,21 @@ Get details of an account by its uid. Both main account and subaccounts can be f
 require_once(__DIR__ . '/vendor/autoload.php');
 
 // Configure HTTP basic authorization: basicAuth
-$config = Swagger\Client\Configuration::getDefaultConfiguration()
+$config = Karix\Configuration::getDefaultConfiguration()
               ->setUsername('YOUR_USERNAME')
               ->setPassword('YOUR_PASSWORD');
 
 
-$apiInstance = new Swagger\Client\Api\AccountsApi(
+$apiInstance = new Karix\Api\AccountsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
     $config
 );
 $uid = "uid_example"; // string | Alphanumeric ID of the subaccount to get.
-$api_version = "1.0"; // string | API Version. If not specified your pinned verison is used.
 
 try {
-    $result = $apiInstance->getSubaccountById($uid, $api_version);
+    $result = $apiInstance->getSubaccountById($uid);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling AccountsApi->getSubaccountById: ', $e->getMessage(), PHP_EOL;
@@ -169,11 +164,10 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **uid** | **string**| Alphanumeric ID of the subaccount to get. |
- **api_version** | **string**| API Version. If not specified your pinned verison is used. | [optional] [default to 1.0]
 
 ### Return type
 
-[**\Swagger\Client\Model\InlineResponse201**](../Model/InlineResponse201.md)
+[**\Karix\Model\AccountResponse**](../Model/AccountResponse.md)
 
 ### Authorization
 
@@ -187,7 +181,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
 # **patchSubaccount**
-> \Swagger\Client\Model\InlineResponse201 patchSubaccount($uid, $api_version, $subaccount)
+> \Karix\Model\AccountResponse patchSubaccount($uid, $subaccount)
 
 Edit an account
 
@@ -199,23 +193,22 @@ Edit details of your account or its subaccount   - An account can only change th
 require_once(__DIR__ . '/vendor/autoload.php');
 
 // Configure HTTP basic authorization: basicAuth
-$config = Swagger\Client\Configuration::getDefaultConfiguration()
+$config = Karix\Configuration::getDefaultConfiguration()
               ->setUsername('YOUR_USERNAME')
               ->setPassword('YOUR_PASSWORD');
 
 
-$apiInstance = new Swagger\Client\Api\AccountsApi(
+$apiInstance = new Karix\Api\AccountsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
     $config
 );
 $uid = "uid_example"; // string | Alphanumeric ID of the account/subaccount to edit.
-$api_version = "1.0"; // string | API Version. If not specified your pinned verison is used.
-$subaccount = new \Swagger\Client\Model\EditAccount(); // \Swagger\Client\Model\EditAccount | Subaccount object
+$subaccount = new \Karix\Model\EditAccount(); // \Karix\Model\EditAccount | Subaccount object
 
 try {
-    $result = $apiInstance->patchSubaccount($uid, $api_version, $subaccount);
+    $result = $apiInstance->patchSubaccount($uid, $subaccount);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling AccountsApi->patchSubaccount: ', $e->getMessage(), PHP_EOL;
@@ -228,12 +221,11 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **uid** | **string**| Alphanumeric ID of the account/subaccount to edit. |
- **api_version** | **string**| API Version. If not specified your pinned verison is used. | [optional] [default to 1.0]
- **subaccount** | [**\Swagger\Client\Model\EditAccount**](../Model/EditAccount.md)| Subaccount object | [optional]
+ **subaccount** | [**\Karix\Model\EditAccount**](../Model/EditAccount.md)| Subaccount object |
 
 ### Return type
 
-[**\Swagger\Client\Model\InlineResponse201**](../Model/InlineResponse201.md)
+[**\Karix\Model\AccountResponse**](../Model/AccountResponse.md)
 
 ### Authorization
 
